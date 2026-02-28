@@ -20,4 +20,7 @@ make clean
 mkdir -p bin
 make ft CLASS=C
 
-mpirun -np "${SLURM_NTASKS}" ./bin/ft.C.x
+maqao oneview -R1 xp=maqao_oneview_xp_ft_C -O2 -o bin/ft.C.x -- mpirun -np "${SLURM_NTASKS}" ./bin/ft.C.x
+
+# mpirun -np "${SLURM_NTASKS}" ./bin/ft.C.x
+
