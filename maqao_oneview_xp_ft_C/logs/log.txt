@@ -1,0 +1,5 @@
+********************************************************************************
+MAQAO 2025.1.4 - 8231fdbe0817fc38e8404098f3255378289b2587::20251212-165227 || 2025/12/12
+maqao oneview -R1 xp=maqao_oneview_xp_ft_C -O2 -o bin/ft.C.x -- mpirun -np 16 ./bin/ft.C.x 
+CPY:  [true] bin/ft.C.x --> /home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C/binaries/ft.C.x
+CMD:   /apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm/bin/maqao lprof _caller=oneview  --xp="/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C/tools/lprof_npsu_run_0" --mpi-command="" --collect-CPU-time-intervals --collect-topology tpp=1   -- /home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C/binaries/ft.C.x  mpirun -np 16 ./bin/ft.C.x

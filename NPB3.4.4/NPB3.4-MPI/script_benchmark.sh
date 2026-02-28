@@ -15,12 +15,13 @@
 romeo_load_x64cpu_env
 
 spack load ^openmpi@4.1.7  %aocc
+spack load ^maqao@2025.1.4 %aocc
 
 make clean
 mkdir -p bin
 make ft CLASS=C
 
-maqao oneview -R1 xp=maqao_oneview_xp_ft_C -O2 -o bin/ft.C.x -- mpirun -np "${SLURM_NTASKS}" ./bin/ft.C.x
+maqao oneview -R1 xp=maqao_oneview_xp_ft_C -- mpirun -np "${SLURM_NTASKS}" ./bin/ft.C.x
 
 # mpirun -np "${SLURM_NTASKS}" ./bin/ft.C.x
 
