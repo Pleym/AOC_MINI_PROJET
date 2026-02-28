@@ -1,0 +1,15 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 1326 - 1337
+--------------------------------------------------------------------------------
+
+1326:                      z(jj,ii) = xin(i+ii, j+jj)
+1327:                   end do
+1328:                end do
+1329:                
+1330:                do ii = 1, transblock
+1331:                   do jj = 1, transblock
+1332:                      xout(j+jj, i+ii) = z(jj,ii)
+1333:                   end do
+1334:                end do
+1335:                
+1336:             end do
+1337:          end do

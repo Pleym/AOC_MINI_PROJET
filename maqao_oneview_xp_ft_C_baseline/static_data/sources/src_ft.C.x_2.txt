@@ -1,0 +1,8 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 207 - 211
+--------------------------------------------------------------------------------
+
+207:                u0(i,j,k) = u0(i,j,k)*(twiddle(i,j,k))
+208:                u1(i,j,k) = u0(i,j,k)
+209:             end do
+210:          end do
+211:       end do

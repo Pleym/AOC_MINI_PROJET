@@ -34,6 +34,17 @@ Dans ce projet, FT constitue donc un cas d'étude pertinent pour comparer les co
 
 Cette analyse repose sur l'expérience OneView localisée dans \texttt{maqao\_oneview\_xp\_ft\_C}. Le profilage est exploitable (\texttt{profiled\_time}=12.40 s, \texttt{application\_time}=12.91 s), avec une activité CPU élevée (96.80\%) et une bonne stabilité d'affinité (97.88\%). La couverture des boucles est élevée (79.80\% du temps applicatif, dont 74.49\% dans des boucles internes), ce qui confirme que les optimisations locales sur les noyaux de calcul sont pertinentes.
 
+\subsection{Alignement explicite avec la consigne du projet}
+
+La démarche suivie est construite pour répondre point par point à la consigne pédagogique:
+\begin{itemize}
+	\item étude \textbf{séquentielle} puis \textbf{parallèle} (tous cœurs physiques disponibles),
+	\item utilisation des modes MAQAO \textbf{normal} (\texttt{-R1}), \textbf{stabilité} (\texttt{-S1}) et \textbf{scalabilité} (\texttt{-R1 -WS}),
+	\item compilation au minimum en \texttt{-O2},
+	\item comparaison d'au moins deux chaînes de compilation (étapes \texttt{baseline} et \texttt{compiler\_variant\_mpifort}, et extension possible vers GCC/Intel/AMD selon disponibilité cluster),
+	\item remontée des indicateurs demandés: temps d'exécution, signaux MAQAO CPU, et usage mémoire (à compléter avec mesures système lors des prochains runs).
+\end{itemize}
+
 \subsection{Constats principaux}
 
 \begin{itemize}
@@ -72,7 +83,7 @@ Les boucles des lignes 1326--1334 et 1396 sont fortement présentes dans le prof
 Pour rester dans un cadre réaliste de niveau Master CHPS, l'optimisation est conduite en \textbf{étapes incrémentales}, en ne modifiant qu'un petit nombre de paramètres à la fois. L'objectif est de conserver un raisonnement causal: si la performance change, il est possible d'identifier la cause probable.
 
 \paragraph{Principe expérimental}
-Chaque étape produit un exécutable FT et un rapport OneView dédié (un dossier \texttt{maqao\_oneview\_xp\_ft\_C\_<etape>}). Les métriques clés sont ensuite consolidées dans un fichier \texttt{ft\_C\_campaign\_summary.csv} pour comparaison inter-étapes.
+Chaque étape produit un exécutable FT et des rapports OneView dédiés. Pour la baseline, on exécute les combinaisons \textbf{seq/par} $\times$ \textbf{normal/stabilité/scalabilité}. Pour les étapes d'optimisation suivantes, on exécute au minimum le mode normal en parallèle pour limiter le coût expérimental. Les métriques clés sont consolidées dans \texttt{ft\_C\_campaign\_summary.csv} pour comparaison inter-étapes.
 
 \paragraph{Étapes retenues et intérêt}
 \begin{enumerate}
@@ -103,6 +114,15 @@ Une étape est conservée si elle améliore durablement le compromis suivant:
 \paragraph{Lecture attendue des résultats}
 Si une étape réduit le temps mais n'améliore pas les hotspots structurants (\texttt{fftz2}, transpositions), le gain est probablement conjoncturel. À l'inverse, une baisse de couverture des boucles critiques ou de meilleurs indicateurs de vectorisation est un signal plus robuste de progrès.
 
+\paragraph{Métriques minimales à reporter à chaque itération}
+\begin{itemize}
+	\item \texttt{application\_time} et \texttt{profiled\_time},
+	\item \texttt{loops\_time}, \texttt{innerloops\_time}, \texttt{activity\_ratio},
+	\item \texttt{speedup\_if\_fp\_vect} et \texttt{speedup\_if\_fully\_vectorised},
+	\item temps séquentiel vs temps parallèle et facteur d'accélération,
+	\item consommation mémoire (RSS max) mesurée côté batch/système.
+\end{itemize}
+
 \subsection{Tableau de synthèse de campagne (à compléter)}
 
 \begin{center}
@@ -120,6 +140,52 @@ compiler\_variant\_mpifort & à compléter & à compléter & à compléter & à 
 \end{center}
 
 Ce tableau est alimenté à partir de \texttt{ft\_C\_campaign\_summary.csv} généré automatiquement par le script de campagne.
+
+\subsection{Comparaison de la nouvelle version (\texttt{baseline}) avec l'ancienne (\texttt{v0})}
+
+Une nouvelle expérience MAQAO a été ajoutée dans \texttt{maqao\_oneview\_xp\_ft\_C\_baseline} (le nom \texttt{basaline} observé dans les échanges correspond vraisemblablement à une faute de frappe; le dossier présent est bien \texttt{baseline}). La comparaison avec l'expérience précédente \texttt{maqao\_oneview\_xp\_ft\_C\_0} donne:
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+Métrique & v0 (\texttt{ft\_C\_0}) & baseline (nouvelle) \\
+\hline
+application\_time (s) & 12.9131 & 12.8771 \\
+profiled\_time (s) & 12.4000 & 12.3850 \\
+user\_time (\%) & 79.89 & 80.14 \\
+loops\_time (\%) & 79.80 & 80.05 \\
+innerloops\_time (\%) & 74.49 & 74.73 \\
+array\_access\_efficiency & 92.69 & 95.39 \\
+speedup\_if\_fp\_vect & 1.1961 & 1.2008 \\
+speedup\_if\_fully\_vectorised & 2.1496 & 2.1569 \\
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Interprétation}
+Le gain en temps d'exécution est faible mais positif (de 12.9131 s à 12.8771 s, soit environ 0.28\%). À ce niveau, il faut rester prudent: cette différence peut être du même ordre que la variabilité de run sur cluster. En revanche, la hausse de \texttt{array\_access\_efficiency} (92.69 $\rightarrow$ 95.39) est un signal qualitatif intéressant: la version baseline semble améliorer la localité mémoire.
+
+\paragraph{Ce qui devient prioritaire après cette comparaison}
+Le profil des hotspots montre que le poids relatif des transpositions augmente dans la nouvelle exécution:
+\begin{itemize}
+	\item \texttt{fftz2} reste \#1 (\texttt{Loop 71}, ~19\%),
+	\item la partie transposition (notamment \texttt{transpose2\_finish} / \texttt{transpose2\_local}) devient très dominante (plusieurs boucles entre ~5\% et ~13\%).
+\end{itemize}
+Cela suggère qu'après un premier niveau d'optimisation calcul, le prochain goulot est davantage \textbf{mémoire/communication} que purement arithmétique.
+
+\subsection{Nouvelles améliorations proposées (ordre logique)}
+
+\begin{enumerate}
+	\item \textbf{Valider statistiquement les gains:} exécuter chaque étape au moins 3 fois et comparer la médiane (pas une seule mesure).
+	\item \textbf{Optimiser les transpositions locales:} tester plusieurs tailles de bloc de transposition (\texttt{transblock}) pour améliorer cache et limiter les permutations coûteuses.
+	\item \textbf{Réduire le coût des copies intermédiaires:} dans \texttt{cffts1}/\texttt{cffts2}, évaluer les bénéfices de copies plus compactes et d'un alignement mémoire explicite.
+	\item \textbf{Travailler la communication MPI:} profiler spécifiquement \texttt{transpose2\_global} (\texttt{MPI\_Alltoall}) et tester des alternatives de mapping/répartition de rangs pour réduire la pression communication.
+	\item \textbf{Approche compilateur contrôlée:} comparer \texttt{-O3} vs \texttt{-Ofast} uniquement après validation de la stabilité numérique (résultat NPB \emph{Verified} obligatoire).
+	\item \textbf{Vectorisation ciblée sur \texttt{fftz2}:} conserver ce noyau comme priorité \#1, en visant FMA et réduction des coûts \emph{peel/tail} signalés par MAQAO.
+\end{enumerate}
+
+\paragraph{Règle de décision pratique}
+Une optimisation est retenue si elle satisfait simultanément: (i) résultat FT vérifié, (ii) gain temps médian significatif, (iii) cohérence des indicateurs MAQAO sur les hotspots principaux.
 
 \subsection{Captures MAQAO à insérer}
 

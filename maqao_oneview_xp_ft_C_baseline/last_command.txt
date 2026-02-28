@@ -1,0 +1,1 @@
+maqao oneview -R1 xp=maqao_oneview_xp_ft_C_baseline "--mpi-command=mpirun -np 16" -- ./bin/ft.C.x 

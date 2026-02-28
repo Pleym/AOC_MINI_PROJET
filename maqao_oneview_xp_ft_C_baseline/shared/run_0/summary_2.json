@@ -1,0 +1,343 @@
+{
+  "report": [
+    {
+      "id_str": "Loop 71 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 71,
+      "analysis": "Execution Time: 18 % - Vectorization Ratio: 93.33 % - Vector Length Use: 24.17 %",
+      "coverage": 18.979198455811,
+      "issues": [
+        {
+          "id_str": "Loop Computation Issues",
+          "score": 9,
+          "issues": [
+            {
+              "code": "L2_LC_4",
+              "analysis": "[SA] Less than 10% of the FP ADD/SUB/MUL arithmetic operations are performed using FMA - Reorganize arithmetic expressions to exhibit potential for FMA. This issue costs 4 points.",
+              "score": 4,
+            },
+            {
+              "code": "L2_LC_8",
+              "analysis": "[SA] Peel/tail loop, considered having a low iteration count - Perform full unroll. Force compiler to use masked instructions. This issue costs 5 points.",
+              "score": 5,
+            }
+          ]
+        },
+        {
+          "id_str": "Control Flow Issues",
+          "score": 5,
+          "issues": [
+            {
+              "code": "L2_LC_8",
+              "analysis": "[SA] Peel/tail loop, considered having a low iteration count - Perform full unroll. Force compiler to use masked instructions. This issue costs 5 points.",
+              "score": 5,
+            }
+          ]
+        },
+        {
+          "id_str": "Data Access Issues",
+          "score": 1,
+          "issues": [
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            },
+            {
+              "code": "L2_DA_5",
+              "analysis": "[SA] Presence of special instructions executing on a single port (SHUFFLE/PERM) - Simplify data access and try to get stride 1 access. There are 1 issues (= instructions) costing 1 point each.",
+              "score": 1,
+            }
+          ]
+        },
+        {
+          "id_str": "Inefficient Vectorization",
+          "score": 1,
+          "issues": [
+            {
+              "code": "L2_DA_5",
+              "analysis": "[SA] Presence of special instructions executing on a single port (SHUFFLE/PERM) - Simplify data access and try to get stride 1 access. There are 1 issues (= instructions) costing 1 point each.",
+              "score": 1,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 4 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 4,
+      "analysis": "Execution Time: 16 % - Vectorization Ratio: 80.00 % - Vector Length Use: 22.50 %",
+      "coverage": 16.5865650177,
+      "issues": [
+        {
+          "id_str": "Loop Computation Issues",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_LC_4",
+              "analysis": "[SA] Less than 10% of the FP ADD/SUB/MUL arithmetic operations are performed using FMA - Reorganize arithmetic expressions to exhibit potential for FMA. This issue costs 4 points.",
+              "score": 4,
+            }
+          ]
+        },
+        {
+          "id_str": "Data Access Issues",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            },
+            {
+              "code": "L2_DA_5",
+              "analysis": "[SA] Presence of special instructions executing on a single port (BLEND/MERGE) - Simplify data access and try to get stride 1 access. There are 4 issues (= instructions) costing 1 point each.",
+              "score": 4,
+            }
+          ]
+        },
+        {
+          "id_str": "Inefficient Vectorization",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_DA_5",
+              "analysis": "[SA] Presence of special instructions executing on a single port (BLEND/MERGE) - Simplify data access and try to get stride 1 access. There are 4 issues (= instructions) costing 1 point each.",
+              "score": 4,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 89 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 89,
+      "analysis": "Execution Time: 13 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 13.361821174622,
+      "issues": [
+        {
+          "id_str": "Data Access Issues",
+          "score": 0,
+          "issues": [
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 79 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 79,
+      "analysis": "Execution Time: 7 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 7.886079788208,
+      "issues": [
+        {
+          "id_str": "Data Access Issues",
+          "score": 2,
+          "issues": [
+            {
+              "code": "L2_DA_1",
+              "analysis": "[SA] Presence of constant non unit stride data access - Use array restructuring, perform loop interchange or use gather instructions to lower a bit the cost. There are 1 issues ( = data accesses) costing 2 point each.",
+              "score": 2,
+            },
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            }
+          ]
+        },
+        {
+          "id_str": "Vectorization Roadblocks",
+          "score": 2,
+          "issues": [
+            {
+              "code": "L2_DA_1",
+              "analysis": "[SA] Presence of constant non unit stride data access - Use array restructuring, perform loop interchange or use gather instructions to lower a bit the cost. There are 1 issues ( = data accesses) costing 2 point each.",
+              "score": 2,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 41 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 41,
+      "analysis": "Execution Time: 5 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 5.3669853210449,
+      "issues": [
+        {
+          "id_str": "Data Access Issues",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_DA_1",
+              "analysis": "[SA] Presence of constant non unit stride data access - Use array restructuring, perform loop interchange or use gather instructions to lower a bit the cost. There are 2 issues ( = data accesses) costing 2 point each.",
+              "score": 4,
+            },
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            }
+          ]
+        },
+        {
+          "id_str": "Vectorization Roadblocks",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_DA_1",
+              "analysis": "[SA] Presence of constant non unit stride data access - Use array restructuring, perform loop interchange or use gather instructions to lower a bit the cost. There are 2 issues ( = data accesses) costing 2 point each.",
+              "score": 4,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 85 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 85,
+      "analysis": "Execution Time: 5 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 5.2177619934082,
+      "issues": [
+      ]
+    },
+    {
+      "id_str": "Loop 72 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 72,
+      "analysis": "Execution Time: 3 % - Vectorization Ratio: 0.00 % - Vector Length Use: 12.17 %",
+      "coverage": 3.6117131710052,
+      "issues": [
+        {
+          "id_str": "Control Flow Issues",
+          "score": 20,
+          "issues": [
+            {
+              "code": "L2_CF_3",
+              "analysis": "[SA] Too many paths (14 paths) - Simplify control structure. There are 14 issues ( = paths) costing 1 point each with a malus of 4 points.",
+              "score": 18,
+            },
+            {
+              "code": "L2_CF_4",
+              "analysis": "[SA] Non innermost loop (InBetween) - Collapse loop with innermost ones. This issue costs 2 points.",
+              "score": 2,
+            }
+          ]
+        },
+        {
+          "id_str": "Data Access Issues",
+          "score": 2,
+          "issues": [
+            {
+              "code": "L2_DA_6",
+              "analysis": "[SA] More than 20% of the loads are accessing the stack - Perform loop splitting to decrease pressure on registers. This issue costs 2 points.",
+              "score": 2,
+            }
+          ]
+        },
+        {
+          "id_str": "Vectorization Roadblocks",
+          "score": 20,
+          "issues": [
+            {
+              "code": "L2_CF_3",
+              "analysis": "[SA] Too many paths (14 paths) - Simplify control structure. There are 14 issues ( = paths) costing 1 point each with a malus of 4 points.",
+              "score": 18,
+            },
+            {
+              "code": "L2_CF_4",
+              "analysis": "[SA] Non innermost loop (InBetween) - Collapse loop with innermost ones. This issue costs 2 points.",
+              "score": 2,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 51 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 51,
+      "analysis": "Execution Time: 2 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 2.5115065574646,
+      "issues": [
+        {
+          "id_str": "Data Access Issues",
+          "score": 0,
+          "issues": [
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 38 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 38,
+      "analysis": "Execution Time: 1 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 1.9070250988007,
+      "issues": [
+        {
+          "id_str": "Data Access Issues",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_DA_1",
+              "analysis": "[SA] Presence of constant non unit stride data access - Use array restructuring, perform loop interchange or use gather instructions to lower a bit the cost. There are 2 issues ( = data accesses) costing 2 point each.",
+              "score": 4,
+            },
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            }
+          ]
+        },
+        {
+          "id_str": "Vectorization Roadblocks",
+          "score": 4,
+          "issues": [
+            {
+              "code": "L2_DA_1",
+              "analysis": "[SA] Presence of constant non unit stride data access - Use array restructuring, perform loop interchange or use gather instructions to lower a bit the cost. There are 2 issues ( = data accesses) costing 2 point each.",
+              "score": 4,
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id_str": "Loop 68 - ft.C.x",
+      "module": "ft.C.x",
+      "id": 68,
+      "analysis": "Execution Time: 1 % - Vectorization Ratio: 100.00 % - Vector Length Use: 25.00 %",
+      "coverage": 1.2620762586594,
+      "issues": [
+        {
+          "id_str": "Data Access Issues",
+          "score": 0,
+          "issues": [
+            {
+              "code": "L2_DA_3",
+              "analysis": "[SA] Inefficient vectorization: more than 10% of the vector loads instructions are unaligned - When allocating arrays, don’t forget to align them. There are 0 issues ( = arrays) costing 2 points each",
+              "score": 0,
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

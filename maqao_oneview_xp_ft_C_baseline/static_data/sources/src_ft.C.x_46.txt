@@ -1,0 +1,6 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 975 - 977
+--------------------------------------------------------------------------------
+
+975:                  xout(i+ii,j,k) = y(i,j,1)
+976:               enddo
+977:            enddo

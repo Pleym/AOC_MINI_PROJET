@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html translate="no" lang="en-US"><head><title>OV - threads redirect</title>
+<meta charset="utf-8" />
+</head>
+<body onload="__redirect ()">
+<div id="err_div"></div>
+<script>
+function __redirect (){
+  const redirect_table = [
+    {romeo-c040_3811352_3811352: "romeo-c040_3811352_3811352", romeo-c040_3811356_3811356: "romeo-c040_3811352_3811352", romeo-c040_3811353_3811353: "romeo-c040_3811353_3811353", romeo-c040_3811342_3811342: "romeo-c040_3811354_3811354", romeo-c040_3811354_3811354: "romeo-c040_3811354_3811354", romeo-c040_3811343_3811343: "romeo-c040_3811354_3811354", romeo-c040_3811355_3811355: "romeo-c040_3811353_3811353", romeo-c040_3811338_3811338: "romeo-c040_3811352_3811352", romeo-c040_3811348_3811348: "romeo-c040_3811353_3811353", romeo-c040_3811345_3811345: "romeo-c040_3811353_3811353", romeo-c040_3811339_3811339: "romeo-c040_3811354_3811354", romeo-c040_3811335_3811335: "romeo-c040_3811354_3811354", romeo-c040_3811350_3811350: "romeo-c040_3811353_3811353", romeo-c040_3811346_3811346: "romeo-c040_3811352_3811352", romeo-c040_3811347_3811347: "romeo-c040_3811352_3811352", romeo-c040_3811340_3811340: "romeo-c040_3811354_3811354", },
+];
+  const queryString = window.location.search;
+  const params = new URLSearchParams(queryString);
+  let thread = params.get("thread");
+  if (thread) {
+    let elems = thread.split ("_");
+    let run_id = elems[0];
+    let key    = elems[1];
+    for (let i = 2; i < elems.length; i++) {
+      key += "_" + elems[i];
+    }
+    window.location.replace("/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C_baseline/RESULTS/ft.C.x_one_html/topo/run_"+run_id+"_"+redirect_table[run_id][key]+".html?origin="+key);
+  }
+  else {
+    let d = document.getElementById ("err_div");
+    if (d) {
+      d.innerHTML = "Missing parameter <i>thread</i>";
+    }
+  }
+}
+</script>
+</body>
+</html>

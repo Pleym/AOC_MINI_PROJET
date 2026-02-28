@@ -1,0 +1,18 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 1378 - 1403
+--------------------------------------------------------------------------------
+
+1378:       subroutine transpose2_finish(n1, n2, xin, xout)
+[...]
+1391:       if (timers_enabled) call timer_start(T_transxzfin)
+1392:       do p = 0, np2-1
+1393:          ioff = p*n2
+1394:          do j = 1, n1/np2
+1395:             do i = 1, n2
+1396:                xout(i+ioff, j) = xin(i, j, p)
+1397:             end do
+1398:          end do
+1399:       end do
+1400:       if (timers_enabled) call timer_stop(T_transxzfin)
+1401: 
+1402:       return
+1403:       end

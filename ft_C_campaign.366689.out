@@ -1,0 +1,61 @@
+=== Stage: baseline (FT CLASS=C) ===
+Loading x86_64 (no gpu) environment
+Environment loaded. Spack available.
+rm -f core *~ */core */*~
+rm -f */*.o */*.mod */*.obj */*.exe */npbparams.h */mpinpb.*
+rm -f MPI_dummy/test MPI_dummy/libmpi.a MPI_dummy/mpi_dummy.f90
+rm -f sys/setparams sys/makesuite sys/setparams.h
+rm -f btio.*.out*
+   =========================================
+   =      NAS Parallel Benchmarks 3.4      =
+   =      MPI/Fortran/C                    =
+   =========================================
+
+cd FT; make CLASS=C F08=def
+make[1]: Entering directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT'
+make[2]: Entering directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/sys'
+gcc -g -DFORTRAN_REC_SIZE=0 -o setparams setparams.c
+make[2]: Leaving directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/sys'
+../sys/setparams ft C 
+cp mpinpb_def.f90 mpinpb.f90
+mpif90 -c  -O2 -g -fno-omit-frame-pointer mpinpb.f90
+mpif90 -c  -O2 -g -fno-omit-frame-pointer ft_data.f90
+mpif90 -c  -O2 -g -fno-omit-frame-pointer ft.f90
+cd ../common; cp mpinpb_def.h mpinpb.h
+cd ../common; mpif90 -c  -O2 -g -fno-omit-frame-pointer get_active_nprocs.f90
+cd ../common; mpif90 -c  -O2 -g -fno-omit-frame-pointer randi8.f90
+cd ../common; mpif90 -c  -O2 -g -fno-omit-frame-pointer print_results.f90
+cd ../common; mpif90 -c  -O2 -g -fno-omit-frame-pointer timers.f90
+mpif90 -O2 -g -fno-omit-frame-pointer -o ../bin/ft.C.x ft.o ft_data.o mpinpb.o ../common/get_active_nprocs.o ../common/randi8.o ../common/print_results.o ../common/timers.o 
+make[1]: Leaving directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT'
+	*************************************************
+	*                                               *
+	*          ONE-View report generation           *
+	*                                               *
+	*************************************************
+
+[MAQAO] Info: Experiment configuration summary is available adding -dbg=1 in command line
+[MAQAO] Info: Experiment directory created: /gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C_baseline
+[MAQAO] Info: 
+[MAQAO] Info: START THE APPLICATION PROFILING
+[MAQAO] Info: -> RUNNING THE PROFILER FOR RUN ( run_0 ) ...
+[MAQAO] Info: -> FORMAT PROFILER RESULTS
+[MAQAO] Info: STOP THE APPLICATION PROFILING
+[MAQAO] Info: 
+[MAQAO] Info: START FUNCTIONS AND LOOPS ANALYSIS ...
+[MAQAO] Info: -> OPEN THE MAIN APPLICATION BINARY ...
+[MAQAO] Info: ---> ALL LOOPS HAVE BEEN ANALYZED
+[MAQAO] Info: ---> ALL FUNCTIONS HAVE BEEN ANALYZED
+[MAQAO] Info: STOP FUNCTIONS AND LOOPS ANALYSIS ...
+[MAQAO] Info: 
+[MAQAO] Info: START THE REPORT GENERATION
+[MAQAO] Info: -> ONE-VIEW EXPERIMENT DIRECTORY: /gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C_baseline
+[MAQAO] Info: In order to reduce disk usage, only 3 / 16 thread profiles will be generated
+      To generate all files, add option --reduce-threads-files=off
+[MAQAO] Info: -> HTML REPORT GENERATED        : /gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C_baseline/RESULTS/ft.C.x_one_html/
+[MAQAO] Info: -> HTML INDEX FILE              : /gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C_baseline/RESULTS/ft.C.x_one_html/index.html
+[MAQAO] Info: STOP THE REPORT GENERATION
+[MAQAO] Info: 
+[MAQAO] Info: If your application produces files, they can be found in directory "."
+[MAQAO] Info: 
+Résumé campagne: /gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/ft_C_campaign_summary.csv

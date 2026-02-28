@@ -2,48 +2,52 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# Campagne MAQAO OneView NPB-MPI (FT uniquement, CLASS=C)
-# - Exécution chronologique des étapes d'optimisation
-# - Un rapport OneView par étape
-# - Export CSV de synthèse des métriques
-# - Soumission unique Slurm (sans dépendances)
+# Campagne FT CLASS=C (version simplifiée)
+# Objectif: garder UNIQUEMENT la meilleure optimisation observée
+#           et comparer proprement seq/par + modes MAQAO + 2 compilateurs.
 # ------------------------------------------------------------
 
 ACCOUNT="${ACCOUNT:-r250142}"
-WALLTIME="${WALLTIME:-00:20:00}"
+PARTITION="${PARTITION:-}"
+WALLTIME="${WALLTIME:-00:30:00}"
 MEM="${MEM:-10G}"
 NODES="${NODES:-1}"
 CONSTRAINT="${CONSTRAINT:-x64cpu}"
 NTASKS="${NTASKS:-16}"
 CPUS_PER_TASK="${CPUS_PER_TASK:-1}"
-SEQ_NTASKS="${SEQ_NTASKS:-1}"
-PAR_NTASKS="${PAR_NTASKS:-${NTASKS}}"
-MAQAO_MODES="${MAQAO_MODES:-normal,stability,scalability}"
-FULL_MATRIX="${FULL_MATRIX:-0}"
-ONEVIEW_PER_STAGE="${ONEVIEW_PER_STAGE:-1}"
-DEFAULT_PROFILE="${DEFAULT_PROFILE:-par}"
-DEFAULT_MODE="${DEFAULT_MODE:-normal}"
 
 BENCHMARK="ft"
 CLASS="C"
-STAGES="${STAGES:-baseline,o3_native,ofast_native,lto_native,compiler_variant_mpifort}"
+
+# Meilleure config observée jusqu'ici (baseline O2 avec symboles pour MAQAO)
+BEST_LABEL="best_o2_profiled"
+BEST_FFLAGS="${BEST_FFLAGS:--O2 -g -fno-omit-frame-pointer}"
+BEST_CFLAGS="${BEST_CFLAGS:--O2 -g -fno-omit-frame-pointer}"
+
+# Essai d'au moins deux wrappers compilateur MPI
+COMPILERS="${COMPILERS:-mpif90,mpifort}"
+
+# Conseils prof: seq puis par + modes R1/S1/R1-WS
+PROFILES="${PROFILES:-seq,par}"
+SEQ_NTASKS="${SEQ_NTASKS:-1}"
+PAR_NTASKS="${PAR_NTASKS:-${NTASKS}}"
+MAQAO_MODES="${MAQAO_MODES:-normal,stability,scalability}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SCRIPT_PATH="${SCRIPT_DIR}/$(basename "$0")"
 ROOT_DIR="${SCRIPT_DIR}"
 
-# En exécution Slurm, $0 peut pointer vers /var/spool/slurmd/... (non persistant/non inscriptible).
-# On privilégie alors le dossier de soumission du job, qui contient le projet.
 if [[ -n "${SLURM_SUBMIT_DIR:-}" && -f "${SLURM_SUBMIT_DIR}/config/make.def.template" ]]; then
 	ROOT_DIR="${SLURM_SUBMIT_DIR}"
 fi
 
-# Si le script a été invoqué via un wrapper, on privilégie le script du projet si présent.
 if [[ -f "${ROOT_DIR}/script_benchmark.sh" ]]; then
 	SCRIPT_PATH="${ROOT_DIR}/script_benchmark.sh"
 fi
 
 SUMMARY_CSV="${ROOT_DIR}/ft_C_campaign_summary.csv"
+RUNTIME_CSV="${ROOT_DIR}/ft_C_runtime_memory.csv"
+RUNTIME_DIR="${ROOT_DIR}/runtime_logs"
 
 load_tools() {
 	romeo_load_x64cpu_env
@@ -82,72 +86,18 @@ set_make_def_param() {
 	sed -i -E "s|^${key}[[:space:]]*=.*$|${key} = ${value}|" config/make.def
 }
 
-configure_make_def_for_stage() {
-	local stage="$1"
-	STAGE_DESC=""
+configure_make_def_for_compiler() {
+	local compiler="$1"
 	cp config/make.def.template config/make.def
 
-	case "${stage}" in
-		baseline)
-			STAGE_DESC="Référence stable pour profiler (O2 + debug symboles)."
-			set_make_def_param MPIFC "mpif90"
-			set_make_def_param FLINK '$(MPIFC)'
-			set_make_def_param MPICC "mpicc"
-			set_make_def_param CLINK '$(MPICC)'
-			set_make_def_param FFLAGS "-O2 -g -fno-omit-frame-pointer"
-			set_make_def_param CFLAGS "-O2 -g -fno-omit-frame-pointer"
-			set_make_def_param FLINKFLAGS '$(FFLAGS)'
-			set_make_def_param CLINKFLAGS '$(CFLAGS)'
-			;;
-		o3_native)
-			STAGE_DESC="Optimisation classique HPC: O3 + arch native + unroll."
-			set_make_def_param MPIFC "mpif90"
-			set_make_def_param FLINK '$(MPIFC)'
-			set_make_def_param MPICC "mpicc"
-			set_make_def_param CLINK '$(MPICC)'
-			set_make_def_param FFLAGS "-O3 -funroll-loops -march=native -g -fno-omit-frame-pointer"
-			set_make_def_param CFLAGS "-O3 -funroll-loops -march=native -g -fno-omit-frame-pointer"
-			set_make_def_param FLINKFLAGS '$(FFLAGS)'
-			set_make_def_param CLINKFLAGS '$(CFLAGS)'
-			;;
-		ofast_native)
-			STAGE_DESC="Version agressive calcul flottant: Ofast + fast-math + native."
-			set_make_def_param MPIFC "mpif90"
-			set_make_def_param FLINK '$(MPIFC)'
-			set_make_def_param MPICC "mpicc"
-			set_make_def_param CLINK '$(MPICC)'
-			set_make_def_param FFLAGS "-Ofast -ffast-math -funroll-loops -march=native -g -fno-omit-frame-pointer"
-			set_make_def_param CFLAGS "-Ofast -ffast-math -funroll-loops -march=native -g -fno-omit-frame-pointer"
-			set_make_def_param FLINKFLAGS '$(FFLAGS)'
-			set_make_def_param CLINKFLAGS '$(CFLAGS)'
-			;;
-		lto_native)
-			STAGE_DESC="Ajout Link-Time Optimization pour optimiser inter-modules."
-			set_make_def_param MPIFC "mpif90"
-			set_make_def_param FLINK '$(MPIFC)'
-			set_make_def_param MPICC "mpicc"
-			set_make_def_param CLINK '$(MPICC)'
-			set_make_def_param FFLAGS "-O3 -funroll-loops -march=native -flto -g -fno-omit-frame-pointer"
-			set_make_def_param CFLAGS "-O3 -funroll-loops -march=native -flto -g -fno-omit-frame-pointer"
-			set_make_def_param FLINKFLAGS '$(FFLAGS) -flto'
-			set_make_def_param CLINKFLAGS '$(CFLAGS) -flto'
-			;;
-		compiler_variant_mpifort)
-			STAGE_DESC="Comparaison wrapper compilateur MPI: mpifort au lieu de mpif90."
-			set_make_def_param MPIFC "mpifort"
-			set_make_def_param FLINK '$(MPIFC)'
-			set_make_def_param MPICC "mpicc"
-			set_make_def_param CLINK '$(MPICC)'
-			set_make_def_param FFLAGS "-O3 -g -fno-omit-frame-pointer"
-			set_make_def_param CFLAGS "-O3 -g -fno-omit-frame-pointer"
-			set_make_def_param FLINKFLAGS '$(FFLAGS)'
-			set_make_def_param CLINKFLAGS '$(CFLAGS)'
-			;;
-		*)
-			echo "Erreur: étape inconnue '${stage}'."
-			exit 1
-			;;
-	esac
+	set_make_def_param MPIFC "${compiler}"
+	set_make_def_param FLINK '$(MPIFC)'
+	set_make_def_param MPICC "mpicc"
+	set_make_def_param CLINK '$(MPICC)'
+	set_make_def_param FFLAGS "${BEST_FFLAGS}"
+	set_make_def_param CFLAGS "${BEST_CFLAGS}"
+	set_make_def_param FLINKFLAGS '$(FFLAGS)'
+	set_make_def_param CLINKFLAGS '$(CFLAGS)'
 }
 
 resolve_mpi_launcher() {
@@ -169,49 +119,6 @@ resolve_mpi_launcher() {
 	echo ""
 }
 
-extract_metric() {
-	local csv_file="$1"
-	local metric="$2"
-	awk -F';' -v m="${metric}" '$1 == m {gsub(/^"+|"+$/, "", $3); print $3; exit}' "${csv_file}"
-}
-
-init_summary_csv() {
-	if [[ ! -f "${SUMMARY_CSV}" ]]; then
-		echo "stage,profile,mode,nprocs,status,description,profiled_time,application_time,user_time,loops_time,speedup_if_fully_vectorised,speedup_if_fp_vect,compilation_options,xp_dir" > "${SUMMARY_CSV}"
-	fi
-}
-
-append_summary_csv() {
-	local stage="$1"
-	local profile="$2"
-	local mode="$3"
-	local nprocs="$4"
-	local status="$5"
-	local desc="$6"
-	local xp_dir="$7"
-	local metrics_file="${xp_dir}/shared/run_0/global_metrics.csv"
-
-	local profiled_time="NA"
-	local application_time="NA"
-	local user_time="NA"
-	local loops_time="NA"
-	local speedup_fully_vect="NA"
-	local speedup_fp_vect="NA"
-	local compilation_options="NA"
-
-	if [[ -f "${metrics_file}" ]]; then
-		profiled_time="$(extract_metric "${metrics_file}" "profiled_time")"
-		application_time="$(extract_metric "${metrics_file}" "application_time")"
-		user_time="$(extract_metric "${metrics_file}" "user_time")"
-		loops_time="$(extract_metric "${metrics_file}" "loops_time")"
-		speedup_fully_vect="$(extract_metric "${metrics_file}" "speedup_if_fully_vectorised")"
-		speedup_fp_vect="$(extract_metric "${metrics_file}" "speedup_if_fp_vect")"
-		compilation_options="$(extract_metric "${metrics_file}" "compilation_options")"
-	fi
-
-	echo "${stage},${profile},${mode},${nprocs},${status},\"${desc}\",${profiled_time},${application_time},${user_time},${loops_time},${speedup_fully_vect},${speedup_fp_vect},${compilation_options},${xp_dir}" >> "${SUMMARY_CSV}"
-}
-
 maqao_mode_args() {
 	local mode="$1"
 	case "${mode}" in
@@ -230,8 +137,104 @@ maqao_mode_args() {
 	esac
 }
 
-run_oneview_variant() {
-	local stage="$1"
+extract_metric() {
+	local csv_file="$1"
+	local metric="$2"
+	awk -F';' -v m="${metric}" '$1 == m {gsub(/^"+|"+$/, "", $3); print $3; exit}' "${csv_file}"
+}
+
+init_summary_csv() {
+	if [[ ! -f "${SUMMARY_CSV}" ]]; then
+		echo "label,compiler,profile,mode,nprocs,status,profiled_time,application_time,user_time,loops_time,speedup_if_fully_vectorised,speedup_if_fp_vect,array_access_efficiency,compilation_options,xp_dir" > "${SUMMARY_CSV}"
+	fi
+
+	if [[ ! -f "${RUNTIME_CSV}" ]]; then
+		echo "label,compiler,profile,nprocs,status,elapsed_wall,max_rss_kb,stdout_log,stderr_log" > "${RUNTIME_CSV}"
+	fi
+
+	mkdir -p "${RUNTIME_DIR}"
+}
+
+append_summary_csv() {
+	local compiler="$1"
+	local profile="$2"
+	local mode="$3"
+	local nprocs="$4"
+	local status="$5"
+	local xp_dir="$6"
+	local metrics_file="${xp_dir}/shared/run_0/global_metrics.csv"
+
+	local profiled_time="NA"
+	local application_time="NA"
+	local user_time="NA"
+	local loops_time="NA"
+	local speedup_fully_vect="NA"
+	local speedup_fp_vect="NA"
+	local array_access_efficiency="NA"
+	local compilation_options="NA"
+
+	if [[ -f "${metrics_file}" ]]; then
+		profiled_time="$(extract_metric "${metrics_file}" "profiled_time")"
+		application_time="$(extract_metric "${metrics_file}" "application_time")"
+		user_time="$(extract_metric "${metrics_file}" "user_time")"
+		loops_time="$(extract_metric "${metrics_file}" "loops_time")"
+		speedup_fully_vect="$(extract_metric "${metrics_file}" "speedup_if_fully_vectorised")"
+		speedup_fp_vect="$(extract_metric "${metrics_file}" "speedup_if_fp_vect")"
+		array_access_efficiency="$(extract_metric "${metrics_file}" "array_access_efficiency")"
+		compilation_options="$(extract_metric "${metrics_file}" "compilation_options")"
+	fi
+
+	echo "${BEST_LABEL},${compiler},${profile},${mode},${nprocs},${status},${profiled_time},${application_time},${user_time},${loops_time},${speedup_fully_vect},${speedup_fp_vect},${array_access_efficiency},${compilation_options},${xp_dir}" >> "${SUMMARY_CSV}"
+}
+
+append_runtime_csv() {
+	local compiler="$1"
+	local profile="$2"
+	local nprocs="$3"
+	local status="$4"
+	local elapsed="$5"
+	local max_rss="$6"
+	local out_log="$7"
+	local err_log="$8"
+
+	echo "${BEST_LABEL},${compiler},${profile},${nprocs},${status},\"${elapsed}\",${max_rss},${out_log},${err_log}" >> "${RUNTIME_CSV}"
+}
+
+run_plain_timing() {
+	local compiler="$1"
+	local profile="$2"
+	local nprocs="$3"
+	local exe="$4"
+
+	local launcher
+	launcher="$(resolve_mpi_launcher "${nprocs}")"
+	if [[ -z "${launcher}" ]]; then
+		append_runtime_csv "${compiler}" "${profile}" "${nprocs}" "FAIL" "NA" "NA" "NA" "NA"
+		return 1
+	fi
+
+	local out_log="${RUNTIME_DIR}/run_${BEST_LABEL}_${compiler}_${profile}.out"
+	local err_log="${RUNTIME_DIR}/run_${BEST_LABEL}_${compiler}_${profile}.err"
+
+	if /usr/bin/time -v bash -lc "${launcher} ${exe}" >"${out_log}" 2>"${err_log}"; then
+		local elapsed
+		local max_rss
+		elapsed=$(awk -F': ' '/Elapsed \(wall clock\) time/ {print $2; exit}' "${err_log}")
+		max_rss=$(awk -F': ' '/Maximum resident set size/ {print $2; exit}' "${err_log}")
+		append_runtime_csv "${compiler}" "${profile}" "${nprocs}" "OK" "${elapsed:-NA}" "${max_rss:-NA}" "${out_log}" "${err_log}"
+		return 0
+	fi
+
+	local elapsed
+	local max_rss
+	elapsed=$(awk -F': ' '/Elapsed \(wall clock\) time/ {print $2; exit}' "${err_log}")
+	max_rss=$(awk -F': ' '/Maximum resident set size/ {print $2; exit}' "${err_log}")
+	append_runtime_csv "${compiler}" "${profile}" "${nprocs}" "FAIL" "${elapsed:-NA}" "${max_rss:-NA}" "${out_log}" "${err_log}"
+	return 1
+}
+
+run_oneview() {
+	local compiler="$1"
 	local profile="$2"
 	local mode="$3"
 	local nprocs="$4"
@@ -240,145 +243,141 @@ run_oneview_variant() {
 	local launcher
 	launcher="$(resolve_mpi_launcher "${nprocs}")"
 	if [[ -z "${launcher}" ]]; then
-		echo "Erreur: aucun lanceur MPI trouvé (mpirun/mpiexec/srun)."
+		append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "NA"
 		return 1
 	fi
 
 	local mode_args
 	mode_args="$(maqao_mode_args "${mode}")"
 	if [[ -z "${mode_args}" ]]; then
-		echo "Mode MAQAO inconnu: ${mode}"
+		append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "NA"
 		return 1
 	fi
 
-	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${stage}_${profile}_${mode}"
+	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${BEST_LABEL}_${compiler}_${profile}_${mode}"
 	rm -rf "${xp}"
 
 	if maqao oneview ${mode_args} xp="${xp}" --mpi-command="${launcher}" -- "${exe}"; then
-		append_summary_csv "${stage}" "${profile}" "${mode}" "${nprocs}" "OK" "${STAGE_DESC}" "${ROOT_DIR}/${xp}"
+		append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "OK" "${ROOT_DIR}/${xp}"
 		return 0
 	fi
 
-	append_summary_csv "${stage}" "${profile}" "${mode}" "${nprocs}" "FAIL" "${STAGE_DESC}" "${ROOT_DIR}/${xp}"
+	append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "${ROOT_DIR}/${xp}"
 	return 1
 }
 
-run_stage() {
-	local stage="$1"
-	local nprocs="$2"
-
+run_campaign() {
 	cd "${ROOT_DIR}"
 	ensure_project_layout
 	load_tools
-	configure_make_def_for_stage "${stage}"
-
-	make clean
-	mkdir -p bin
-	make "${BENCHMARK}" "CLASS=${CLASS}" F08=def
-
-	local exe="./bin/${BENCHMARK}.${CLASS}.x"
-	if [[ ! -x "${exe}" ]]; then
-		echo "Erreur: binaire introuvable ${exe}"
-		exit 1
-	fi
-
-	local failed_local=0
-
-	if [[ "${ONEVIEW_PER_STAGE}" == "1" ]]; then
-		local chosen_nprocs="${PAR_NTASKS}"
-		if [[ "${DEFAULT_PROFILE}" == "seq" ]]; then
-			chosen_nprocs="${SEQ_NTASKS}"
-		fi
-
-		if ! run_oneview_variant "${stage}" "${DEFAULT_PROFILE}" "${DEFAULT_MODE}" "${chosen_nprocs}" "${exe}"; then
-			failed_local=$((failed_local + 1))
-		fi
-
-		if [[ ${failed_local} -gt 0 ]]; then
-			return 1
-		fi
-		return 0
-	fi
-
-	if [[ "${stage}" == "baseline" || "${FULL_MATRIX}" == "1" ]]; then
-		IFS=',' read -r -a mode_array <<< "${MAQAO_MODES}"
-		for mode in "${mode_array[@]}"; do
-			if ! run_oneview_variant "${stage}" "seq" "${mode}" "${SEQ_NTASKS}" "${exe}"; then
-				failed_local=$((failed_local + 1))
-			fi
-			if ! run_oneview_variant "${stage}" "par" "${mode}" "${PAR_NTASKS}" "${exe}"; then
-				failed_local=$((failed_local + 1))
-			fi
-		done
-	else
-		if ! run_oneview_variant "${stage}" "par" "normal" "${nprocs}" "${exe}"; then
-			failed_local=$((failed_local + 1))
-		fi
-	fi
-
-	if [[ ${failed_local} -gt 0 ]]; then
-		return 1
-	fi
-	return 0
-}
-
-run_all_stages() {
-	local nprocs="$1"
-	IFS=',' read -r -a stage_array <<< "${STAGES}"
-	local failed=0
-
 	init_summary_csv
 
-	for stage in "${stage_array[@]}"; do
-		echo "=== Stage: ${stage} (FT CLASS=C) ==="
-		if ! run_stage "${stage}" "${nprocs}"; then
-			echo "Stage ${stage} en échec: on poursuit la campagne." >&2
-			failed=$((failed + 1))
+	local failed=0
+	IFS=',' read -r -a compiler_array <<< "${COMPILERS}"
+	IFS=',' read -r -a profile_array <<< "${PROFILES}"
+	IFS=',' read -r -a mode_array <<< "${MAQAO_MODES}"
+
+	for compiler in "${compiler_array[@]}"; do
+		if ! command -v "${compiler}" >/dev/null 2>&1; then
+			echo "Compilateur indisponible: ${compiler} (skip)"
+			continue
 		fi
+
+		echo "=== Compilation ${BENCHMARK}.${CLASS} avec ${compiler} (${BEST_LABEL}) ==="
+		configure_make_def_for_compiler "${compiler}"
+		make clean
+		mkdir -p bin
+		if ! make "${BENCHMARK}" "CLASS=${CLASS}" F08=def; then
+			echo "Echec compilation avec ${compiler}" >&2
+			failed=$((failed + 1))
+			continue
+		fi
+
+		local exe="./bin/${BENCHMARK}.${CLASS}.x"
+		if [[ ! -x "${exe}" ]]; then
+			echo "Binaire introuvable après compilation ${compiler}: ${exe}" >&2
+			failed=$((failed + 1))
+			continue
+		fi
+
+		for profile in "${profile_array[@]}"; do
+			local nprocs="${PAR_NTASKS}"
+			if [[ "${profile}" == "seq" ]]; then
+				nprocs="${SEQ_NTASKS}"
+			fi
+
+			if ! run_plain_timing "${compiler}" "${profile}" "${nprocs}" "${exe}"; then
+				failed=$((failed + 1))
+			fi
+
+			for mode in "${mode_array[@]}"; do
+				if ! run_oneview "${compiler}" "${profile}" "${mode}" "${nprocs}" "${exe}"; then
+					failed=$((failed + 1))
+				fi
+			done
+		done
 	done
 
-	echo "Résumé campagne: ${SUMMARY_CSV}"
+	echo "Résumé MAQAO: ${SUMMARY_CSV}"
+	echo "Résumé temps/RAM: ${RUNTIME_CSV}"
+
 	if [[ ${failed} -gt 0 ]]; then
-		echo "${failed} étape(s) en échec." >&2
+		echo "${failed} exécution(s) en échec (voir logs)." >&2
 		return 1
 	fi
 }
 
 submit_campaign() {
 	cd "${ROOT_DIR}"
-
-	unset SBATCH_DEPENDENCY || true
 	ensure_project_layout
+	unset SBATCH_DEPENDENCY || true
 
-	local job_name="npb_${BENCHMARK}_${CLASS}_campaign"
-	local output_file="${BENCHMARK}_${CLASS}_campaign.%j.out"
-	local error_file="${BENCHMARK}_${CLASS}_campaign.%j.err"
+	local job_name="npb_${BENCHMARK}_${CLASS}_${BEST_LABEL}"
+	local output_file="${BENCHMARK}_${CLASS}_${BEST_LABEL}.%j.out"
+	local error_file="${BENCHMARK}_${CLASS}_${BEST_LABEL}.%j.err"
 
-	local job_id
-	job_id=$(sbatch --parsable \
-		--account="${ACCOUNT}" \
-		--time="${WALLTIME}" \
-		--mem="${MEM}" \
-		--nodes="${NODES}" \
-		--constraint="${CONSTRAINT}" \
-		--ntasks="${NTASKS}" \
-		--cpus-per-task="${CPUS_PER_TASK}" \
-		--job-name="${job_name}" \
-		--output="${output_file}" \
-		--error="${error_file}" \
-		--export=ALL,RUN_ALL_STAGES=1,STAGES="${STAGES}",NTASKS_REQ="${NTASKS}" \
+	local -a sbatch_cmd
+	sbatch_cmd=(sbatch --parsable
+		--account="${ACCOUNT}"
+		--time="${WALLTIME}"
+		--mem="${MEM}"
+		--nodes="${NODES}"
+		--constraint="${CONSTRAINT}"
+		--ntasks="${NTASKS}"
+		--cpus-per-task="${CPUS_PER_TASK}"
+		--job-name="${job_name}"
+		--output="${output_file}"
+		--error="${error_file}"
+		--export=ALL,RUN_CAMPAIGN=1
 		"${SCRIPT_PATH}")
 
+	if [[ -n "${PARTITION}" ]]; then
+		sbatch_cmd=(sbatch --parsable
+			--account="${ACCOUNT}"
+			--partition="${PARTITION}"
+			--time="${WALLTIME}"
+			--mem="${MEM}"
+			--nodes="${NODES}"
+			--constraint="${CONSTRAINT}"
+			--ntasks="${NTASKS}"
+			--cpus-per-task="${CPUS_PER_TASK}"
+			--job-name="${job_name}"
+			--output="${output_file}"
+			--error="${error_file}"
+			--export=ALL,RUN_CAMPAIGN=1
+			"${SCRIPT_PATH}")
+	fi
+
+	local job_id
+	job_id=$("${sbatch_cmd[@]}")
 	echo "Soumis ${job_name} -> job ${job_id}"
 	echo "Campagne soumise."
 }
 
-if [[ "${RUN_ALL_STAGES:-0}" == "1" ]]; then
-	run_all_stages "${NTASKS_REQ:-${SLURM_NTASKS:-${NTASKS}}}"
-elif [[ "${RUN_STAGE:-0}" == "1" ]]; then
-	run_stage "${STAGE}" "${NTASKS_REQ:-${SLURM_NTASKS:-${NTASKS}}}"
+if [[ "${RUN_CAMPAIGN:-0}" == "1" ]]; then
+	run_campaign
 elif [[ -n "${SLURM_JOB_ID:-}" ]]; then
-	run_all_stages "${SLURM_NTASKS:-${NTASKS}}"
+	run_campaign
 else
 	submit_campaign
 fi

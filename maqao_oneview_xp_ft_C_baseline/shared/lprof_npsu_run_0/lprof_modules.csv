@@ -1,0 +1,16 @@
+name;time_p;time_s;cpi_ratio;
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C_baseline/binaries/ft.C.x;80.135536193848;9.9247941970825;;
+/usr/lib64/libc.so.6;16.589094161987;2.0545608997345;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_btl_vader.so;2.2661731243134;0.28066575527191;;
+/usr/lib64/libm.so.6;0.65253639221191;0.080816693603992;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/libopen-pal.so.40.30.4;0.2301581799984;0.028505114838481;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_coll_libnbc.so;0.037938166409731;0.0046986457891762;;
+/usr/lib64/ld-linux-x86-64.so.2;0.030350530520082;0.0037589161656797;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_pml_ob1.so;0.025292109698057;0.0031324303708971;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/libmpi.so.40.30.7;0.010116843506694;0.0012529720552266;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/hwloc-2.11.1-zszwj6mlegoufyo3sndyfgilnr736i2o/lib/libhwloc.so.15.8.0;0.0075876326300204;0.00093972904141992;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libpciaccess-0.17-f3l77foob4tmpf6irjrbs53f6f34nh3j/lib/libpciaccess.so.0.11.1;0.0050584217533469;0.00062648602761328;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libevent-2.1.12-oykhar6xez7p4mvzekd4wlbzo4eh5g6n/lib/libevent_core-2.1.so.7.0.1;0.0025292108766735;0.00031324301380664;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libevent-2.1.12-oykhar6xez7p4mvzekd4wlbzo4eh5g6n/lib/libevent_pthreads-2.1.so.7.0.1;0.0025292108766735;0.00031324301380664;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/libmpi_mpifh.so.40.30.1;0.0025292108766735;0.00031324301380664;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_allocator_bucket.so;0.0025292108766735;0.00031324301380664;;
