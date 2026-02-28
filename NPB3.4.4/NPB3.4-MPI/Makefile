@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+jSHELL=/bin/sh
 CLASS=U
 SUBTYPE=
 VERSION=
