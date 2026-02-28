@@ -16,6 +16,13 @@ NODES="${NODES:-1}"
 CONSTRAINT="${CONSTRAINT:-x64cpu}"
 NTASKS="${NTASKS:-16}"
 CPUS_PER_TASK="${CPUS_PER_TASK:-1}"
+SEQ_NTASKS="${SEQ_NTASKS:-1}"
+PAR_NTASKS="${PAR_NTASKS:-${NTASKS}}"
+MAQAO_MODES="${MAQAO_MODES:-normal,stability,scalability}"
+FULL_MATRIX="${FULL_MATRIX:-0}"
+ONEVIEW_PER_STAGE="${ONEVIEW_PER_STAGE:-1}"
+DEFAULT_PROFILE="${DEFAULT_PROFILE:-par}"
+DEFAULT_MODE="${DEFAULT_MODE:-normal}"
 
 BENCHMARK="ft"
 CLASS="C"
@@ -170,15 +177,18 @@ extract_metric() {
 
 init_summary_csv() {
 	if [[ ! -f "${SUMMARY_CSV}" ]]; then
-		echo "stage,status,description,profiled_time,application_time,user_time,loops_time,speedup_if_fully_vectorised,speedup_if_fp_vect,compilation_options,xp_dir" > "${SUMMARY_CSV}"
+		echo "stage,profile,mode,nprocs,status,description,profiled_time,application_time,user_time,loops_time,speedup_if_fully_vectorised,speedup_if_fp_vect,compilation_options,xp_dir" > "${SUMMARY_CSV}"
 	fi
 }
 
 append_summary_csv() {
 	local stage="$1"
-	local status="$2"
-	local desc="$3"
-	local xp_dir="$4"
+	local profile="$2"
+	local mode="$3"
+	local nprocs="$4"
+	local status="$5"
+	local desc="$6"
+	local xp_dir="$7"
 	local metrics_file="${xp_dir}/shared/run_0/global_metrics.csv"
 
 	local profiled_time="NA"
@@ -199,7 +209,58 @@ append_summary_csv() {
 		compilation_options="$(extract_metric "${metrics_file}" "compilation_options")"
 	fi
 
-	echo "${stage},${status},\"${desc}\",${profiled_time},${application_time},${user_time},${loops_time},${speedup_fully_vect},${speedup_fp_vect},${compilation_options},${xp_dir}" >> "${SUMMARY_CSV}"
+	echo "${stage},${profile},${mode},${nprocs},${status},\"${desc}\",${profiled_time},${application_time},${user_time},${loops_time},${speedup_fully_vect},${speedup_fp_vect},${compilation_options},${xp_dir}" >> "${SUMMARY_CSV}"
+}
+
+maqao_mode_args() {
+	local mode="$1"
+	case "${mode}" in
+		normal)
+			echo "-R1"
+			;;
+		stability)
+			echo "-S1"
+			;;
+		scalability)
+			echo "-R1 -WS"
+			;;
+		*)
+			echo ""
+			;;
+	esac
+}
+
+run_oneview_variant() {
+	local stage="$1"
+	local profile="$2"
+	local mode="$3"
+	local nprocs="$4"
+	local exe="$5"
+
+	local launcher
+	launcher="$(resolve_mpi_launcher "${nprocs}")"
+	if [[ -z "${launcher}" ]]; then
+		echo "Erreur: aucun lanceur MPI trouvé (mpirun/mpiexec/srun)."
+		return 1
+	fi
+
+	local mode_args
+	mode_args="$(maqao_mode_args "${mode}")"
+	if [[ -z "${mode_args}" ]]; then
+		echo "Mode MAQAO inconnu: ${mode}"
+		return 1
+	fi
+
+	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${stage}_${profile}_${mode}"
+	rm -rf "${xp}"
+
+	if maqao oneview ${mode_args} xp="${xp}" --mpi-command="${launcher}" -- "${exe}"; then
+		append_summary_csv "${stage}" "${profile}" "${mode}" "${nprocs}" "OK" "${STAGE_DESC}" "${ROOT_DIR}/${xp}"
+		return 0
+	fi
+
+	append_summary_csv "${stage}" "${profile}" "${mode}" "${nprocs}" "FAIL" "${STAGE_DESC}" "${ROOT_DIR}/${xp}"
+	return 1
 }
 
 run_stage() {
@@ -221,23 +282,44 @@ run_stage() {
 		exit 1
 	fi
 
-	local launcher
-	launcher="$(resolve_mpi_launcher "${nprocs}")"
-	if [[ -z "${launcher}" ]]; then
-		echo "Erreur: aucun lanceur MPI trouvé (mpirun/mpiexec/srun)."
-		exit 1
-	fi
+	local failed_local=0
 
-	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${stage}"
-	rm -rf "${xp}"
+	if [[ "${ONEVIEW_PER_STAGE}" == "1" ]]; then
+		local chosen_nprocs="${PAR_NTASKS}"
+		if [[ "${DEFAULT_PROFILE}" == "seq" ]]; then
+			chosen_nprocs="${SEQ_NTASKS}"
+		fi
 
-	if maqao oneview -R1 xp="${xp}" --mpi-command="${launcher}" -- "${exe}"; then
-		append_summary_csv "${stage}" "OK" "${STAGE_DESC}" "${ROOT_DIR}/${xp}"
+		if ! run_oneview_variant "${stage}" "${DEFAULT_PROFILE}" "${DEFAULT_MODE}" "${chosen_nprocs}" "${exe}"; then
+			failed_local=$((failed_local + 1))
+		fi
+
+		if [[ ${failed_local} -gt 0 ]]; then
+			return 1
+		fi
 		return 0
 	fi
 
-	append_summary_csv "${stage}" "FAIL" "${STAGE_DESC}" "${ROOT_DIR}/${xp}"
-	return 1
+	if [[ "${stage}" == "baseline" || "${FULL_MATRIX}" == "1" ]]; then
+		IFS=',' read -r -a mode_array <<< "${MAQAO_MODES}"
+		for mode in "${mode_array[@]}"; do
+			if ! run_oneview_variant "${stage}" "seq" "${mode}" "${SEQ_NTASKS}" "${exe}"; then
+				failed_local=$((failed_local + 1))
+			fi
+			if ! run_oneview_variant "${stage}" "par" "${mode}" "${PAR_NTASKS}" "${exe}"; then
+				failed_local=$((failed_local + 1))
+			fi
+		done
+	else
+		if ! run_oneview_variant "${stage}" "par" "normal" "${nprocs}" "${exe}"; then
+			failed_local=$((failed_local + 1))
+		fi
+	fi
+
+	if [[ ${failed_local} -gt 0 ]]; then
+		return 1
+	fi
+	return 0
 }
 
 run_all_stages() {
