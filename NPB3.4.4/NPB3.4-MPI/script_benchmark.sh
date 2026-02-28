@@ -1,4 +1,4 @@
-#!usr/bin/bash
+#!/bin/bash
 
 
 
@@ -16,7 +16,7 @@ romeo_load_x64cpu_env
 
 spack load ^openmpi@4.1.7  %aocc
 
-cmake clean
-cmake ft CLASS=C
+make clean
+make ft CLASS=C
 
 mpirun -np 16 ./bin/ft.C.x
