@@ -21,8 +21,21 @@ BENCHMARK="ft"
 CLASS="C"
 STAGES="${STAGES:-baseline,o3_native,ofast_native,lto_native,compiler_variant_mpifort}"
 
-SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_PATH="${SCRIPT_DIR}/$(basename "$0")"
+ROOT_DIR="${SCRIPT_DIR}"
+
+# En exécution Slurm, $0 peut pointer vers /var/spool/slurmd/... (non persistant/non inscriptible).
+# On privilégie alors le dossier de soumission du job, qui contient le projet.
+if [[ -n "${SLURM_SUBMIT_DIR:-}" && -f "${SLURM_SUBMIT_DIR}/config/make.def.template" ]]; then
+	ROOT_DIR="${SLURM_SUBMIT_DIR}"
+fi
+
+# Si le script a été invoqué via un wrapper, on privilégie le script du projet si présent.
+if [[ -f "${ROOT_DIR}/script_benchmark.sh" ]]; then
+	SCRIPT_PATH="${ROOT_DIR}/script_benchmark.sh"
+fi
+
 SUMMARY_CSV="${ROOT_DIR}/ft_C_campaign_summary.csv"
 
 load_tools() {
