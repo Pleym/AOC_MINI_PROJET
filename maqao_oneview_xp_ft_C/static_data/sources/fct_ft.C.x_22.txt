@@ -1,0 +1,30 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 1252 - 1400
+--------------------------------------------------------------------------------
+
+1252:       subroutine transpose_xy_z(l1, l2, xin, xout)
+[...]
+1263:       call transpose2_local(dims(1,l1)*dims(2, l1),dims(3, l1),  &
+1264:      &                          xin, xout)
+1265:       call transpose2_global(xout, xin)
+1266:       call transpose2_finish(dims(1,l1)*dims(2, l1),dims(3, l1),  &
+1267:      &                          xin, xout)
+1268: 
+1269:       return
+1270:       end
+[...]
+1364:       if (timers_enabled) call timer_start(T_transxzglo)
+1365:       call mpi_alltoall(xin, ntdivnp/np_min, dc_type,  &
+1366:      &                  xout, ntdivnp/np_min, dc_type,  &
+1367:      &                  commslice1, ierr)
+1368:       if (timers_enabled) call timer_stop(T_transxzglo)
+[...]
+1391:       if (timers_enabled) call timer_start(T_transxzfin)
+1392:       do p = 0, np2-1
+1393:          ioff = p*n2
+1394:          do j = 1, n1/np2
+1395:             do i = 1, n2
+1396:                xout(i+ioff, j) = xin(i, j, p)
+1397:             end do
+1398:          end do
+1399:       end do
+1400:       if (timers_enabled) call timer_stop(T_transxzfin)

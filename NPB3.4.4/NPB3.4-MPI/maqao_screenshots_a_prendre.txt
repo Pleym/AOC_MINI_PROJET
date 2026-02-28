@@ -1,0 +1,95 @@
+CHECKLIST CAPTURES MAQAO - FT CLASS=C
+=====================================
+
+Objectif:
+Avoir des captures comparables entre toutes les étapes d'optimisation.
+
+Etapes de campagne prévues:
+- baseline
+- o3_native
+- ofast_native
+- lto_native
+- compiler_variant_mpifort
+
+Pour chaque étape, ouvrir:
+maqao_oneview_xp_ft_C_<etape>/RESULTS/ft.C.x_one_html/index.html
+
+Captures à prendre (même ordre pour chaque étape)
+-------------------------------------------------
+
+1) Vue globale (Summary)
+   - Page: Dashboard / Summary
+   - Capturer les indicateurs:
+     * Application time
+     * Profiled time
+     * speedup_if_fully_vectorised
+     * speedup_if_fp_vect
+     * compilation_options
+   - Nom fichier image conseillé:
+     figures/maqao_<etape>_01_summary.png
+
+2) Hotspots boucles
+   - Page: Loops (tri décroissant par Coverage)
+   - Capturer le top 10 des boucles
+   - Vérifier présence des boucles FT clés:
+     * fftz2 (Loop 71 / 75)
+     * ft (Loop 4)
+     * transpose_x_yz (Loop 82)
+     * transpose2_local (Loop 91/95)
+   - Nom fichier image conseillé:
+     figures/maqao_<etape>_02_loops_hotspots.png
+
+3) Détail boucle #1 (la plus coûteuse)
+   - Page: détail de la boucle la plus coûteuse
+   - Capturer:
+     * Vectorization Ratio
+     * Vector Length Use
+     * recommandations CQA (FMA, peel/tail, data access)
+   - Nom fichier image conseillé:
+     figures/maqao_<etape>_03_loop1_detail.png
+
+4) Fonctions les plus coûteuses
+   - Page: Functions
+   - Capturer le top des fonctions avec coverage
+   - Nom fichier image conseillé:
+     figures/maqao_<etape>_04_functions.png
+
+5) Répartition MPI / runtime
+   - Page: Runtime / Categorization (si disponible)
+   - Capturer la part MPI vs Exe vs Memory/Math
+   - Nom fichier image conseillé:
+     figures/maqao_<etape>_05_runtime_split.png
+
+6) Topologie / activité threads
+   - Page: Topology / Thread activity
+   - Capturer:
+     * activity_ratio
+     * affinity_stability
+     * active threads
+   - Nom fichier image conseillé:
+     figures/maqao_<etape>_06_topology_threads.png
+
+Synthèse finale (captures comparatives)
+---------------------------------------
+
+7) Tableau comparatif inter-étapes
+   - Construire un tableau (ou capture tableur) avec:
+     etape, application_time, speedup_if_fully_vectorised, speedup_if_fp_vect,
+     loops_time, compilation_options, statut (OK/FAIL)
+   - Données source: ft_C_campaign_summary.csv
+   - Nom fichier image conseillé:
+     figures/maqao_all_stages_comparison.png
+
+8) Capture conclusion
+   - Une capture mettant en évidence le meilleur compromis
+     (temps + stabilité numérique + lisibilité des métriques)
+   - Nom fichier image conseillé:
+     figures/maqao_best_stage_conclusion.png
+
+Bonnes pratiques de prise de capture
+------------------------------------
+- Même résolution de fenêtre pour toutes les étapes.
+- Même niveau de zoom navigateur.
+- Même tri dans les tableaux (Coverage décroissant).
+- Inclure le nom de l'étape dans le titre de la capture.
+- Garder une convention de nommage homogène.

@@ -1,0 +1,193 @@
+address;source_location;insn;indent
+0xac80;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1182;MOV	$0x1,%EDI;
+0xac85;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1182;CMP	$0x2,%R8D;
+0xac89;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JB	af50 <fftz2_+0xb60>;
+0xac8f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R11,%R13;
+0xac92;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JA	af50 <fftz2_+0xb60>;
+0xac98;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%R11,%R10;
+0xac9b;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%RBP,%RSI;
+0xac9e;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;IMUL	%R12,%RSI;
+0xaca2;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0xa0(%RSP),%RAX;
+0xacaa;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RSI,%RAX;
+0xacad;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RAX;
+0xacb0;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%RCX,%R11;
+0xacb3;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RAX,%RCX;
+0xacb6;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RAX,%RCX;
+0xacb9;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JB	af0f <fftz2_+0xb1f>;
+0xacbf;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x98(%RSP),%RAX;
+0xacc7;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RSI,%RAX;
+0xacca;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RAX;
+0xaccd;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%R11,1),%RCX;
+0xacd1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RAX,%RCX;
+0xacd4;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JB	af0f <fftz2_+0xb1f>;
+0xacda;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x90(%RSP),%RAX;
+0xace2;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RSI,%RAX;
+0xace5;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RAX;
+0xace8;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%R11,1),%RCX;
+0xacec;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RAX,%RCX;
+0xacef;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JB	af0f <fftz2_+0xb1f>;
+0xacf5;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x88(%RSP),%RAX;
+0xacfd;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RSI,%RAX;
+0xad00;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RAX;
+0xad03;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%R11,1),%RCX;
+0xad07;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RAX,%RCX;
+0xad0a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JB	af08 <fftz2_+0xb18>;
+0xad10;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x78(%RSP),%RAX;
+0xad15;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%RSI,1),%RCX;
+0xad19;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RCX;
+0xad1c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x70(%RSP),%RAX;
+0xad21;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%RSI,1),%R10;
+0xad25;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%R10;
+0xad28;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x68(%RSP),%RAX;
+0xad2d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%RSI,1),%R8;
+0xad31;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%R8;
+0xad34;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x60(%RSP),%RAX;
+0xad39;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RAX,%RSI,1),%R11;
+0xad3d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%R11;
+0xad40;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x58(%RSP),%RAX;
+0xad45;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RSI,%RAX;
+0xad48;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RAX;
+0xad4b;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x50(%RSP),%R13;
+0xad50;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%RSI,%R13,1),%RBP;
+0xad54;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RBX,%RBP;
+0xad57;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%RBX,%R13;
+0xad5a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x48(%RSP),%RBX;
+0xad5f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%RSI,%RBX;
+0xad62;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%R13,%RBX;
+0xad65;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	0x40(%RSP),%RSI;
+0xad6a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;ADD	%R13,%RSI;
+0xad6d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R11,%RCX;
+0xad70;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%R13B;
+0xad74;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R10,%R8;
+0xad77;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETBB	-0x7c(%RSP);
+0xad7c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RBP,%RCX;
+0xad7f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETBB	-0x7a(%RSP);
+0xad84;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R10,%RAX;
+0xad87;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETBB	-0x7b(%RSP);
+0xad8c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RSI,%RCX;
+0xad8f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%CL;
+0xad92;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R10,%RBX;
+0xad95;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETBB	-0x79(%RSP);
+0xad9a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RBP,%R8;
+0xad9d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%R10B;
+0xada1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R11,%RAX;
+0xada4;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETBB	0x80(%RSP);
+0xadac;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RSI,%R8;
+0xadaf;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%R8B;
+0xadb3;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%R11,%RBX;
+0xadb6;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%R11B;
+0xadba;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RSI,%RAX;
+0xadbd;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%AL;
+0xadc0;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;CMP	%RBP,%RBX;
+0xadc3;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SETB	%SIL;
+0xadc7;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;TEST	%SIL,%AL;
+0xadca;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af1c <fftz2_+0xb2c>;
+0xadd0;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;AND	%R11B,%R8B;
+0xadd3;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af1c <fftz2_+0xb2c>;
+0xadd9;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;AND	0x80(%RSP),%R10B;
+0xade1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af1c <fftz2_+0xb2c>;
+0xade7;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%R13D,%EAX;
+0xadea;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;AND	-0x79(%RSP),%CL;
+0xadee;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x78(%RSP),%R10;
+0xadf3;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0xf8(%RSP),%RBX;
+0xadfb;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	$0xfffffffffffffff,%R11;
+0xae05;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x48(%RSP),%R8;
+0xae0a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x50(%RSP),%R13;
+0xae0f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x58(%RSP),%RBP;
+0xae14;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af42 <fftz2_+0xb52>;
+0xae1a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOVZX	-0x7b(%RSP),%ECX;
+0xae1f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;AND	%CL,-0x7a(%RSP);
+0xae23;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af42 <fftz2_+0xb52>;
+0xae29;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;AND	-0x7c(%RSP),%AL;
+0xae2d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x68(%RSP),%RCX;
+0xae32;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af50 <fftz2_+0xb60>;
+0xae38;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x38(%RSP),%RAX;
+0xae3d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;LEA	(%R9,%RAX,1),%RSI;
+0xae41;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;XOR	%EDI,%EDI;
+0xae43;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0x20(%RSP),%RAX;
+0xae48;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;NOPL	(%RAX,%RAX,1);
+0xae50;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1184;MOVUPD	(%R9,%RDI,1),%XMM3;  (73) 
+0xae56;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1184;MOVUPD	0x10(%R9,%RDI,1),%XMM4;  (73) 
+0xae5d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1184;MOVAPD	%XMM3,%XMM2;  (73) 
+0xae61;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1184;UNPCKLPD	%XMM4,%XMM2;  (73) 
+0xae65;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1184;UNPCKHPD	%XMM4,%XMM3;  (73) 
+0xae69;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1185;MOVUPD	(%RSI,%RDI,1),%XMM4;  (73) 
+0xae6e;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1185;MOVUPD	0x10(%RSI,%RDI,1),%XMM5;  (73) 
+0xae74;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1185;MOVAPD	%XMM4,%XMM6;  (73) 
+0xae78;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1185;UNPCKLPD	%XMM5,%XMM6;  (73) 
+0xae7c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1185;UNPCKHPD	%XMM5,%XMM4;  (73) 
+0xae80;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVAPD	%XMM2,%XMM5;  (73) 
+0xae84;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;ADDPD	%XMM6,%XMM5;  (73) 
+0xae88;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVAPD	%XMM3,%XMM7;  (73) 
+0xae8c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;ADDPD	%XMM4,%XMM7;  (73) 
+0xae90;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVAPD	%XMM5,%XMM8;  (73) 
+0xae95;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;UNPCKLPD	%XMM7,%XMM8;  (73) 
+0xae9a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVHLPS	%XMM5,%XMM7;  (73) 
+0xae9d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVUPS	%XMM7,0x10(%R14,%RDI,1);  (73) 
+0xaea3;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVUPD	%XMM8,(%R14,%RDI,1);  (73) 
+0xaea9;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;SUBPD	%XMM6,%XMM2;  (73) 
+0xaead;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;SUBPD	%XMM4,%XMM3;  (73) 
+0xaeb1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVAPD	%XMM1,%XMM4;  (73) 
+0xaeb5;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MULPD	%XMM2,%XMM4;  (73) 
+0xaeb9;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVAPD	%XMM1,%XMM5;  (73) 
+0xaebd;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MULPD	%XMM3,%XMM5;  (73) 
+0xaec1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MULPD	%XMM0,%XMM2;  (73) 
+0xaec5;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;ADDPD	%XMM5,%XMM2;  (73) 
+0xaec9;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MULPD	%XMM0,%XMM3;  (73) 
+0xaecd;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;SUBPD	%XMM3,%XMM4;  (73) 
+0xaed1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVAPD	%XMM4,%XMM3;  (73) 
+0xaed5;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;UNPCKLPD	%XMM2,%XMM3;  (73) 
+0xaed9;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;UNPCKHPD	%XMM2,%XMM4;  (73) 
+0xaedd;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVUPD	%XMM4,0x10(%R15,%RDI,1);  (73) 
+0xaee4;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVUPD	%XMM3,(%R15,%RDI,1);  (73) 
+0xaeea;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;ADD	$0x20,%RDI;  (73) 
+0xaeee;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;CMP	%RDI,%RAX;  (73) 
+0xaef1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;JNE	ae50 <fftz2_+0xa60>;  (73) 
+0xaef7;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOV	0x28(%RSP),%RDI;
+0xaefc;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;CMP	%R8,0x30(%RSP);
+0xaf01;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af50 <fftz2_+0xb60>;
+0xaf03;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JMP	afb0 <fftz2_+0xbc0>;
+0xaf08;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x68(%RSP),%RCX;
+0xaf0d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JMP	af12 <fftz2_+0xb22>;
+0xaf0f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%R11,%RCX;
+0xaf12;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	%R10,%R11;
+0xaf15;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x78(%RSP),%R10;
+0xaf1a;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JMP	af50 <fftz2_+0xb60>;
+0xaf1c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x78(%RSP),%R10;
+0xaf21;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	0xf8(%RSP),%RBX;
+0xaf29;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	$0xfffffffffffffff,%R11;
+0xaf33;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x48(%RSP),%R8;
+0xaf38;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x50(%RSP),%R13;
+0xaf3d;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x58(%RSP),%RBP;
+0xaf42;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x68(%RSP),%RCX;
+0xaf47;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;NOPW	(%RAX,%RAX,1);
+0xaf50;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;MOV	-0x10(%RSP),%RAX;
+0xaf55;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SUB	%RDI,%RAX;
+0xaf58;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;SAL	$0x4,%RDI;
+0xaf5c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;NOPL	(%RAX);
+0xaf60;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1184;MOVUPD	-0x10(%R9,%RDI,1),%XMM2;  (71) 
+0xaf67;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1185;MOVUPD	(%RDX,%RDI,1),%XMM3;  (71) 
+0xaf6c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVAPD	%XMM2,%XMM4;  (71) 
+0xaf70;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;ADDPD	%XMM3,%XMM4;  (71) 
+0xaf74;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1186;MOVUPD	%XMM4,-0x10(%R14,%RDI,1);  (71) 
+0xaf7b;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;SUBPD	%XMM3,%XMM2;  (71) 
+0xaf7f;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVAPD	%XMM1,%XMM3;  (71) 
+0xaf83;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MULPD	%XMM2,%XMM3;  (71) 
+0xaf87;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;SHUFPD	$0x1,%XMM2,%XMM2;  (71) 
+0xaf8c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MULPD	%XMM0,%XMM2;  (71) 
+0xaf90;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVAPD	%XMM3,%XMM4;  (71) 
+0xaf94;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;SUBPD	%XMM2,%XMM4;  (71) 
+0xaf98;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;ADDPD	%XMM3,%XMM2;  (71) 
+0xaf9c;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVSD	%XMM4,%XMM2;  (71) 
+0xafa0;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;MOVUPD	%XMM2,-0x10(%R15,%RDI,1);  (71) 
+0xafa7;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;ADD	$0x10,%RDI;  (71) 
+0xafab;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1187;DEC	%RAX;  (71) 
+0xafae;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1188;JNE	af60 <fftz2_+0xb70>;  (71) 
+0xafb0;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;LEA	0x1(%R12),%RAX;
+0xafb5;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;ADD	%RBP,%R9;
+0xafb8;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;ADD	%RBP,%R14;
+0xafbb;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;ADD	%RBP,%R15;
+0xafbe;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;ADD	%RBP,%RDX;
+0xafc1;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;CMP	%R10,%R12;
+0xafc4;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;MOV	%RAX,%R12;
+0xafc7;/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90:1189;JNE	ac80 <fftz2_+0x890>;

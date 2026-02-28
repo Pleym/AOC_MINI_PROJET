@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html translate="no" lang="en-US"><head><title>OV - ft.C.x - Profiling MPI #13.0- node romeo-c040 - process 3804129 - thread 3804129</title>
+<meta charset="utf-8" />
+<meta name="google" content="notranslate" />
+<link rel="stylesheet" type="text/css" media="screen" href="../css/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes/redmond_custom/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes/redmond_custom/jquery.jqplot.min.css" />
+<link rel="stylesheet" type="text/css" href="../css/MAQAO_theme.css" />
+<link rel="stylesheet" type="text/css" href="../css/maqao_modal.css" />
+<link rel="stylesheet" type="text/css" href="../css/global.css" />
+<link rel="stylesheet" type="text/css" href="../css/maqao_menu.css" />
+<script src="../js/jquery-1.9.0.min.js" ></script>
+<script src="../js/jquery-ui-1.10.3.custom.min.js" ></script>
+<script src="../js/grid.locale-en.js" ></script>
+<script src="../js/jquery.jqGrid.min.js" ></script>
+<script src="../js/d3.min.js" ></script>
+<script class="include" src="../js/jquery.jqplot.min.js"></script>
+<script class="include" src="../js/jqplot.pieRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.barRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.categoryAxisRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.pointLabels.min.js"></script>
+<script class="include" src="../js/jqplot.cursor.min.js"></script>
+<script class="include" src="../js/jqplot.canvasTextRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.canvasAxisTickRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.canvasAxisLabelRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.enhancedLegendRenderer.min.js"></script>
+<script class="include" src="../js/jqplot.highlighter.min.js"></script>
+<script class="include" src="../js/jqplot.logAxisRenderer.min.js"></script>
+<script class="include" src="../js/maqao_menu.js"></script>
+<script>
+$( function() {
+  $( document ).tooltip({
+    content: function() {
+      if (this.classList.contains ("tooltip-maqao")
+      ||  this.classList.contains ("tooltip-maqao-button")) {
+        return tooltips_texts[$(this).attr('tooltip_id')];
+      }
+    },
+    position: {
+      my: "center bottom-20",
+        at: "center top",
+        using: function( position, feedback ) {
+          $( this ).css( position );
+          $( "<div>" )
+            .addClass( "arrow-tt" )
+            .addClass( feedback.vertical )
+            .addClass( feedback.horizontal )
+            .appendTo( this );
+        }
+      }
+  });
+} );
+
+// Code from https://www.htmlgoodies.com/beyond/javascript/article.php/3724571/Using-Multiple-JavaScript-Onload-Functions.htm
+function addLoadEvent(func) {
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+function loadCSS(filename){ 
+  var file = document.createElement("link");
+  file.setAttribute("rel", "stylesheet");
+  file.setAttribute("type", "text/css");
+  file.setAttribute("href", filename);
+  document.head.appendChild(file);
+}
+addLoadEvent(function(){
+  var theme = localStorage.getItem("__MAQAO_OV_theme__");
+  if (theme) {
+    loadCSS("../css/"+theme+".css");
+  }
+  else {
+    localStorage.setItem("__MAQAO_OV_theme__", "MAQAO_theme");
+    loadCSS("../css/MAQAO_theme.css");
+  }
+});
+</script>
+</head><body>
+<div id="page_title"><img alt="MAQAO" id="maqao_logo" src="../images/MAQAO_small_logo.png"/><ul id="maqao_menu"><li ><a  href="../index.html">Global</a><ul><li ><a  href="../config.html">Configurations</a></li><li ><a  href="../env.html">Environment Variables</a></li><li ><a  href="../outputs.html">Outputs</a></li><li ><a  href="../log.html">Logs</a></li><li ><a  href="../tools_status.html">Tools Status</a></li></ul></li><li ><a  href="../summary.html">Summary</a></li><li ><a  href="../application.html">Application</a></li><li ><a  href="../fcts_and_loops.html">Functions</a></li><li ><a  href="../loops_index.html">Loops</a></li><li ><a  href="../topology.html">Topology</a><ul><li ><a  href="../lstopo.html">lstopo</a></li><li ><a  href="../lstopo_PU.html">lstopo_PU</a></li><li ><a  href="../lstopo_threads.html">lstopo_threads</a></li></ul></li></ul>
+<span><img alt="options" id="menu_options_icon" src="../images/gear_20.png"  onclick="__open_options ()"/></span>
+</div>
+<script>
+function __change_theme () {
+  var new_theme = document.getElementById("select_theme").value;
+  localStorage.setItem("__MAQAO_OV_theme__", new_theme);
+    loadCSS("../css/"+new_theme+".css");
+}
+function __open_options () {
+  var elem = document.getElementById ("options_configuration");
+  if (elem.dataset.open == "false") {
+    elem.dataset.open = "true";
+    elem.style.display = "block";
+  }
+  else {
+    elem.dataset.open = "false";
+    elem.style.display = "none";
+  }
+}
+</script>
+<div id="anchor_file_start"></div>
+<div id="maqao_content">
+<div>
+  <div id="spacer_page_title" ></div>
+  <div id="options_configuration" data-open="false" style="display:none;">
+    <h3 id="options_configuration_header">Report Configuration</h3>
+    <span style="margin-left:10px;"><label for="select_theme">Theme: </label>    <select name="theme" id="select_theme" onchange="__change_theme ()">  <option value="MAQAO_theme">MAQAO_theme</option>  <option value="darkgrey">darkgrey</option>  <option value="cyan">cyan</option></select></span>    <span style="margin-left:10px;"><label for="select_chart_theme">Chart Theme: </label>    <select name="theme" id="select_chart_theme" onchange="__change_chart_theme ()">  <option value="Default_Chart_Theme">Default_Chart_Theme</option>  <option value="grey">grey</option></select></span></div>
+</div>
+<script>
+  let theme = localStorage.getItem("__MAQAO_OV_theme__");
+  if (theme) {
+    document.getElementById("select_theme").value = theme;
+  }
+  theme = localStorage.getItem("__MAQAO_OV_chart_theme__");
+  if (theme) {
+    document.getElementById("select_chart_theme").value = theme;
+  }
+document.getElementById("spacer_page_title").style.height = (document.getElementById("page_title").clientHeight + 25)+"px";
+var obj = document.getElementById("page_title");
+if (obj) {
+  var elems = document.getElementsByClassName ("_first_menu_level")
+  if (obj.clientHeight < 90) {
+    for (var i = 0; i < elems.length; i++) {
+      elems.item(i).style.borderBottomLeftRadius = "";
+      elems.item(i).style.borderBottomRightRadius = "";
+    }
+  }
+  else {
+    for (var i = 0; i < elems.length; i++) {
+      elems.item(i).style.borderBottomLeftRadius = "10px";
+      elems.item(i).style.borderBottomRightRadius = "10px";
+    }
+  }
+}
+</script>
+<div class="_fixed_box"  id="warning_other_thread_box" style="display: none;" ><h3 class="_header">Warning</h3>
+<div class="_content"><div id="warning_other_thread" style="margin-top:15px; margin-bottom:15px;"></div></div></div><div class="_accordion_box collapsed" ><h3 id="_accordion_header_1" class="_header collapsed" onclick="_click_accordion_header(this)" ><span class="_accordion_box_button">&#x25B6;</span>Environment Variables<span class="tooltip-maqao-button help-maqao" title="" tooltip_id="0" ></span></h3><div id="_accordion_content_1" class="_content collapsed"><pre style="margin: 0px">OMPI_MCA_orte_app_num=0</pre>
+<pre style="margin: 0px">SHELL=/usr/bin/bash</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_precondition_transports=b03b4ce0fcc5d9ac-0a6e615f3821d329</pre>
+<pre style="margin: 0px">SLURM_JOB_USER=doabaul</pre>
+<pre style="margin: 0px">SLURM_TASKS_PER_NODE=16</pre>
+<pre style="margin: 0px">SLURM_JOB_UID=100438</pre>
+<pre style="margin: 0px">OMPI_MCA_shmem_RUNTIME_QUERY_hint=mmap</pre>
+<pre style="margin: 0px">HISTCONTROL=ignoredups</pre>
+<pre style="margin: 0px">OMPI_UNIVERSE_SIZE=16</pre>
+<pre style="margin: 0px">SLURM_TASK_PID=3803958</pre>
+<pre style="margin: 0px">PMIX_MCA_mca_base_component_show_load_errors=1</pre>
+<pre style="margin: 0px">PKG_CONFIG_PATH=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/numactl-2.0.18-px3naq2prg63psodi7iki7bbsb4erc5x/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pmix-5.0.3-zp25yhusgibcjfytchfe76wr5yf6fzmc/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib64/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/krb5-1.21.3-z4bbnp45ms3yywaeefvoazlsuvwlpbab/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libedit-3.1-20240808-b6r5grmibqok7wtoy6ezdglj564ewku6/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxcrypt-4.4.35-fzcpq26mho3uvwpjwfq7e7amukfbpyf5/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/hwloc-2.11.1-zszwj6mlegoufyo3sndyfgilnr736i2o/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libevent-2.1.12-oykhar6xez7p4mvzekd4wlbzo4eh5g6n/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libpciaccess-0.17-f3l77foob4tmpf6irjrbs53f6f34nh3j/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssl-3.4.0-4726p344d7bhhbm6oyedp6lqwqlw2tvb/lib64/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxml2-2.13.4-54ncwafykndxuozlpgve3dqowqz76ynl/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/ncurses-6.5-laocu6thz4g4zlwr7h5smkur2cp7uois/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/bzip2-1.0.8-inmsdcsypngjiospuxos4563fnoor65h/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/xz-5.4.6-v2hkzs4tqxi27vhk7vk4wdf5l7a2dpga/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zstd-1.5.6-mvocf5kgocluumv22t3fgfb23u5y7osq/lib/pkgconfig:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zlib-ng-2.2.1-iyyrw5hqfo43vh4ou4tsethn4x53kzaa/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib64/pkgconfig</pre>
+<pre style="margin: 0px">PMIX_HOSTNAME=romeo-c040</pre>
+<pre style="margin: 0px">SLURM_LOCALID=0</pre>
+<pre style="margin: 0px">SLURM_SUBMIT_DIR=/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI</pre>
+<pre style="margin: 0px">HISTSIZE=1000</pre>
+<pre style="margin: 0px">HOSTNAME=romeo-c040</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">OMPI_COMM_WORLD_NODE_RANK=13</pre>
+<pre style="margin: 0px">SLURMD_NODENAME=romeo-c040</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">OMPI_MCA_ess_base_vpid=13</pre>
+<pre style="margin: 0px">PMIX_SECURITY_MODE=native</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_hnp_uri=2893283328.0;tcp://172.3.1.80,172.1.1.80:39085</pre>
+<pre style="margin: 0px">SLURM_JOB_START_TIME=1772268039</pre>
+<pre style="margin: 0px">HYDRA_LAUNCHER_EXTRA_ARGS=--external-launcher</pre>
+<pre style="margin: 0px">MPICC=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin/mpicc</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">OMPI_COMM_WORLD_LOCAL_RANK=13</pre>
+<pre style="margin: 0px">SLURM_CLUSTER_NAME=romeo2024</pre>
+<pre style="margin: 0px">SLURM_JOB_END_TIME=1772268639</pre>
+<pre style="margin: 0px">SLURM_CPUS_ON_NODE=16</pre>
+<pre style="margin: 0px">SLURM_JOB_CPUS_PER_NODE=16</pre>
+<pre style="margin: 0px">MPICXX=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin/mpic++</pre>
+<pre style="margin: 0px">HFI_NO_BACKTRACE=1</pre>
+<pre style="margin: 0px">MPIFC=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin/mpifort</pre>
+<pre style="margin: 0px">PMIX_GDS_MODULE=shmem2,hash</pre>
+<pre style="margin: 0px">PWD=/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI</pre>
+<pre style="margin: 0px">PRTE_MCA_plm_slurm_args=--external-launcher</pre>
+<pre style="margin: 0px">SLURM_GTIDS=0</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_local_daemon_uri=2893283328.0;tcp://172.3.1.80,172.1.1.80:39085</pre>
+<pre style="margin: 0px">LOGNAME=doabaul</pre>
+<pre style="margin: 0px">XDG_SESSION_TYPE=tty</pre>
+<pre style="margin: 0px">SLURM_JOB_PARTITION=instant</pre>
+<pre style="margin: 0px">MODULESHOME=/usr/share/Modules</pre>
+<pre style="margin: 0px">MANPATH=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/numactl-2.0.18-px3naq2prg63psodi7iki7bbsb4erc5x/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssh-9.9p1-r5zsu232joi6vgv2r3nibfclunmrpgra/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pmix-5.0.3-zp25yhusgibcjfytchfe76wr5yf6fzmc/share/man:/usr/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/krb5-1.21.3-z4bbnp45ms3yywaeefvoazlsuvwlpbab/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libedit-3.1-20240808-b6r5grmibqok7wtoy6ezdglj564ewku6/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxcrypt-4.4.35-fzcpq26mho3uvwpjwfq7e7amukfbpyf5/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/hwloc-2.11.1-zszwj6mlegoufyo3sndyfgilnr736i2o/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/gettext-0.22.5-ps2e7uhtgfenku2zh7uzlfzyoscoehpj/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxml2-2.13.4-54ncwafykndxuozlpgve3dqowqz76ynl/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/tar-1.34-sbg2rrqinjpuazonwn42gzgjrbpmt4lv/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/bzip2-1.0.8-inmsdcsypngjiospuxos4563fnoor65h/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libiconv-1.17-kkpyou2dtar3ikrmyaodyk2feejtlmf2/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pigz-2.8-o2ut2odygtsjrsabh7nhsokufghpoess/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/xz-5.4.6-v2hkzs4tqxi27vhk7vk4wdf5l7a2dpga/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zstd-1.5.6-mvocf5kgocluumv22t3fgfb23u5y7osq/share/man:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zlib-ng-2.2.1-iyyrw5hqfo43vh4ou4tsethn4x53kzaa/share/man:/usr/share/man:/apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm/man:/apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm/man:/usr/share/man:</pre>
+<pre style="margin: 0px">SLURM_TRES_PER_TASK=cpu:1</pre>
+<pre style="margin: 0px">SLURM_JOB_NUM_NODES=1</pre>
+<pre style="margin: 0px">_=/usr/bin/env</pre>
+<pre style="margin: 0px">PMIX_SYSTEM_TMPDIR=/tmp</pre>
+<pre style="margin: 0px">SPACK_PYTHON=/usr/bin/python3</pre>
+<pre style="margin: 0px">PMIX_SERVER_URI41=2893283328.0;tcp4://127.0.0.1:40821</pre>
+<pre style="margin: 0px">SLURM_JOBID=366573</pre>
+<pre style="margin: 0px">I_MPI_HYDRA_BOOTSTRAP_EXEC_EXTRA_ARGS=--external-launcher</pre>
+<pre style="margin: 0px">SLURM_JOB_QOS=normal</pre>
+<pre style="margin: 0px">PMIX_BFROP_BUFFER_TYPE=PMIX_BFROP_BUFFER_NON_DESC</pre>
+<pre style="margin: 0px">OMPI_ARGV=lprof -collect-hwc abs-xp=/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C/tools/lprof_npsu_run_0 host=romeo-c040</pre>
+<pre style="margin: 0px">MOTD_SHOWN=pam</pre>
+<pre style="margin: 0px">__MODULES_SHARE_MANPATH=:1</pre>
+<pre style="margin: 0px">HOME=/home/doabaul</pre>
+<pre style="margin: 0px">OMPI_NUM_APP_CTX=1</pre>
+<pre style="margin: 0px">LANG=C.UTF-8</pre>
+<pre style="margin: 0px">LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_num_nodes=1</pre>
+<pre style="margin: 0px">SLURM_PROCID=0</pre>
+<pre style="margin: 0px">MPIF90=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin/mpif90</pre>
+<pre style="margin: 0px">PMIX_VERSION=5.0.3</pre>
+<pre style="margin: 0px">TMPDIR=/tmp</pre>
+<pre style="margin: 0px">CMAKE_PREFIX_PATH=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/numactl-2.0.18-px3naq2prg63psodi7iki7bbsb4erc5x:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssh-9.9p1-r5zsu232joi6vgv2r3nibfclunmrpgra:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pmix-5.0.3-zp25yhusgibcjfytchfe76wr5yf6fzmc:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/krb5-1.21.3-z4bbnp45ms3yywaeefvoazlsuvwlpbab:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libedit-3.1-20240808-b6r5grmibqok7wtoy6ezdglj564ewku6:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxcrypt-4.4.35-fzcpq26mho3uvwpjwfq7e7amukfbpyf5:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/hwloc-2.11.1-zszwj6mlegoufyo3sndyfgilnr736i2o:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libevent-2.1.12-oykhar6xez7p4mvzekd4wlbzo4eh5g6n:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/gettext-0.22.5-ps2e7uhtgfenku2zh7uzlfzyoscoehpj:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libpciaccess-0.17-f3l77foob4tmpf6irjrbs53f6f34nh3j:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssl-3.4.0-4726p344d7bhhbm6oyedp6lqwqlw2tvb:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxml2-2.13.4-54ncwafykndxuozlpgve3dqowqz76ynl:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/ncurses-6.5-laocu6thz4g4zlwr7h5smkur2cp7uois:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/tar-1.34-sbg2rrqinjpuazonwn42gzgjrbpmt4lv:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/bzip2-1.0.8-inmsdcsypngjiospuxos4563fnoor65h:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libiconv-1.17-kkpyou2dtar3ikrmyaodyk2feejtlmf2:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pigz-2.8-o2ut2odygtsjrsabh7nhsokufghpoess:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/xz-5.4.6-v2hkzs4tqxi27vhk7vk4wdf5l7a2dpga:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zstd-1.5.6-mvocf5kgocluumv22t3fgfb23u5y7osq:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zlib-ng-2.2.1-iyyrw5hqfo43vh4ou4tsethn4x53kzaa:/apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm</pre>
+<pre style="margin: 0px">MPIF77=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin/mpif77</pre>
+<pre style="margin: 0px">SLURM_CPUS_PER_TASK=1</pre>
+<pre style="margin: 0px">SLURM_NTASKS=16</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_tmpdir_base=/tmp</pre>
+<pre style="margin: 0px">SLURM_TOPOLOGY_ADDR=root.sweth-data2.romeo-c040</pre>
+<pre style="margin: 0px">SSH_CONNECTION=92.184.107.73 60647 194.57.105.173 22</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">PMIX_RANK=13</pre>
+<pre style="margin: 0px">PMIX_SERVER_URI2=2893283328.0;tcp4://127.0.0.1:40821</pre>
+<pre style="margin: 0px">PMIX_SERVER_URI3=2893283328.0;tcp4://127.0.0.1:40821</pre>
+<pre style="margin: 0px">PMIX_SERVER_URI4=2893283328.0;tcp4://127.0.0.1:40821</pre>
+<pre style="margin: 0px">OMPI_MCA_initial_wdir=/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI</pre>
+<pre style="margin: 0px">OMPI_FIRST_RANKS=0</pre>
+<pre style="margin: 0px">SPACK_ROOT=/apps/2025/manual_install/spack-x64cpu-1.0.x</pre>
+<pre style="margin: 0px">HYDRA_BOOTSTRAP=slurm</pre>
+<pre style="margin: 0px">OMPI_MCA_mpi_oversubscribe=0</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_jobfam_session_dir=/tmp/ompi.romeo-c040.100438/pid.3804087</pre>
+<pre style="margin: 0px">SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node</pre>
+<pre style="margin: 0px">SPACK_LOADED_HASHES=5xjwtinzt2wrrifl52gxby222rtswzte:e4pd4v7dt7ggezkwwmhc3jsebzfkoawz</pre>
+<pre style="margin: 0px">XDG_SESSION_CLASS=user</pre>
+<pre style="margin: 0px">SLURM_MEM_PER_NODE=10240</pre>
+<pre style="margin: 0px">SELINUX_ROLE_REQUESTED=</pre>
+<pre style="margin: 0px">PMIX_SERVER_URI21=2893283328.0;tcp4://127.0.0.1:40821</pre>
+<pre style="margin: 0px">TERM=xterm-256color</pre>
+<pre style="margin: 0px">ACLOCAL_PATH=/usr/share/aclocal:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/gettext-0.22.5-ps2e7uhtgfenku2zh7uzlfzyoscoehpj/share/aclocal:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxml2-2.13.4-54ncwafykndxuozlpgve3dqowqz76ynl/share/aclocal:/usr/share/aclocal</pre>
+<pre style="margin: 0px">LESSOPEN=||/usr/bin/lesspipe.sh %s</pre>
+<pre style="margin: 0px">USER=doabaul</pre>
+<pre style="margin: 0px">SLURM_NODELIST=romeo-c040</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_ess_num_procs=16</pre>
+<pre style="margin: 0px">OMPI_FILE_LOCATION=/tmp/ompi.romeo-c040.100438/pid.3804087/0/0</pre>
+<pre style="margin: 0px">ENVIRONMENT=BATCH</pre>
+<pre style="margin: 0px">OMPI_COMM_WORLD_SIZE=16</pre>
+<pre style="margin: 0px">MODULES_RUN_QUARANTINE=LD_LIBRARY_PATH LD_PRELOAD</pre>
+<pre style="margin: 0px">LOADEDMODULES=</pre>
+<pre style="margin: 0px">SLURM_JOB_ACCOUNT=r250142</pre>
+<pre style="margin: 0px">SELINUX_USE_CURRENT_RANGE=</pre>
+<pre style="margin: 0px">SLURM_PRIO_PROCESS=0</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">OMPI_MCA_orte_ess_node_rank=13</pre>
+<pre style="margin: 0px">SLURM_NPROCS=16</pre>
+<pre style="margin: 0px">SHLVL=3</pre>
+<pre style="margin: 0px">SLURM_NNODES=1</pre>
+<pre style="margin: 0px">BASH_ENV=/etc/spack_bash_functions.rc</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">PMIX_ID=2893283329.13</pre>
+<pre style="margin: 0px">OMPI_COMM_WORLD_LOCAL_SIZE=16</pre>
+<pre style="margin: 0px">XDG_SESSION_ID=3102014</pre>
+<pre style="margin: 0px">SLURM_SUBMIT_HOST=romeo1</pre>
+<pre style="margin: 0px">PMIX_SERVER_TMPDIR=/tmp/ompi.romeo-c040.100438/pid.3804087</pre>
+<pre style="margin: 0px">OMPI_COMMAND=maqao</pre>
+<pre style="margin: 0px">XDG_RUNTIME_DIR=/run/user/100438</pre>
+<pre style="margin: 0px">SLURM_JOB_ID=366573</pre>
+<pre style="margin: 0px">SLURM_NODEID=0</pre>
+<pre style="margin: 0px">OMPI_MCA_ess=^singleton</pre>
+<pre style="margin: 0px">SSH_CLIENT=92.184.107.73 60647 22</pre>
+<pre style="margin: 0px">PMIX_NAMESPACE=2893283329</pre>
+<pre style="margin: 0px">which_declare=declare -f</pre>
+<pre style="margin: 0px">XDG_DATA_DIRS=/home/doabaul/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share</pre>
+<pre style="margin: 0px">SLURM_CONF=/etc/slurm/slurm.conf</pre>
+<pre style="margin: 0px">PATH=/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssh-9.9p1-r5zsu232joi6vgv2r3nibfclunmrpgra/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/tar-1.34-sbg2rrqinjpuazonwn42gzgjrbpmt4lv/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/bzip2-1.0.8-inmsdcsypngjiospuxos4563fnoor65h/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pigz-2.8-o2ut2odygtsjrsabh7nhsokufghpoess/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/xz-5.4.6-v2hkzs4tqxi27vhk7vk4wdf5l7a2dpga/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zstd-1.5.6-mvocf5kgocluumv22t3fgfb23u5y7osq/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/numactl-2.0.18-px3naq2prg63psodi7iki7bbsb4erc5x/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssh-9.9p1-r5zsu232joi6vgv2r3nibfclunmrpgra/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pmix-5.0.3-zp25yhusgibcjfytchfe76wr5yf6fzmc/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/krb5-1.21.3-z4bbnp45ms3yywaeefvoazlsuvwlpbab/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/hwloc-2.11.1-zszwj6mlegoufyo3sndyfgilnr736i2o/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libevent-2.1.12-oykhar6xez7p4mvzekd4wlbzo4eh5g6n/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/gettext-0.22.5-ps2e7uhtgfenku2zh7uzlfzyoscoehpj/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openssl-3.4.0-4726p344d7bhhbm6oyedp6lqwqlw2tvb/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libxml2-2.13.4-54ncwafykndxuozlpgve3dqowqz76ynl/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/ncurses-6.5-laocu6thz4g4zlwr7h5smkur2cp7uois/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/tar-1.34-sbg2rrqinjpuazonwn42gzgjrbpmt4lv/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/bzip2-1.0.8-inmsdcsypngjiospuxos4563fnoor65h/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libiconv-1.17-kkpyou2dtar3ikrmyaodyk2feejtlmf2/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/pigz-2.8-o2ut2odygtsjrsabh7nhsokufghpoess/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/xz-5.4.6-v2hkzs4tqxi27vhk7vk4wdf5l7a2dpga/bin:/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/zstd-1.5.6-mvocf5kgocluumv22t3fgfb23u5y7osq/bin:/apps/2025/manual_install/spack-x64cpu-1.0.x/bin:/apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm/bin:/apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm/bin:/apps/2025/manual_install/maqao/2025.1.4/x86_64/maqao.x86_64.2025.1.4-x86-arm/bin:/apps/2025/manual_install/spack-x64cpu-1.0.x/bin:/home/doabaul/.local/bin:/home/doabaul/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/lpp/mmfs/bin</pre>
+<pre style="margin: 0px">SELINUX_LEVEL_REQUESTED=</pre>
+<pre style="margin: 0px">SLURM_JOB_NAME=script_benchmark.sh</pre>
+<pre style="margin: 0px">MODULEPATH=/opt/softwares/modulefiles</pre>
+<pre style="margin: 0px">OMPI_MCA_pmix=^s1,s2,cray,isolated</pre>
+<pre style="margin: 0px">DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/100438/bus</pre>
+<pre style="margin: 0px">OMPI_MCA_ess_base_jobid=2893283329</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_bound_at_launch=1</pre>
+<pre style="margin: 0px">MAIL=/var/spool/mail/doabaul</pre>
+<pre style="margin: 0px">SSH_TTY=/dev/pts/25</pre>
+<pre style="margin: 0px">OMPI_MCA_plm_slurm_args=--external-launcher</pre>
+<pre style="margin: 0px">SLURM_JOB_GID=100438</pre>
+<pre style="margin: 0px">OMPI_APP_CTX_NUM_PROCS=16</pre>
+<pre style="margin: 0px">IPATH_NO_BACKTRACE=1</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_top_session_dir=/tmp/ompi.romeo-c040.100438</pre>
+<pre style="margin: 0px">OMPI_MCA_orte_launch=1</pre>
+<pre style="margin: 0px">OLDPWD=/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI</pre>
+<pre style="margin: 0px">SLURM_JOB_NODELIST=romeo-c040</pre>
+<pre style="margin: 0px">MODULES_CMD=/usr/share/Modules/libexec/modulecmd.tcl</pre>
+<pre style="margin: 0px">I_MPI_HYDRA_BOOTSTRAP=slurm</pre>
+<pre style="background-color:#e5ccb3;margin: 0px">OMPI_COMM_WORLD_RANK=13</pre>
+<pre style="margin: 0px">BASH_FUNC_ml%%=() {  module ml "$@"</pre>
+<pre style="margin: 0px">}</pre>
+<pre style="margin: 0px">BASH_FUNC_which%%=() {  ( alias;</pre>
+<pre style="margin: 0px"> eval ${which_declare} ) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@</pre>
+<pre style="margin: 0px">}</pre>
+<pre style="margin: 0px">BASH_FUNC_module%%=() {  local _mlredir=1;</pre>
+<pre style="margin: 0px"> if [ -n "${MODULES_REDIRECT_OUTPUT+x}" ]; then</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> if [ "$MODULES_REDIRECT_OUTPUT" = '0' ]; then</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _mlredir=0;</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> if [ "$MODULES_REDIRECT_OUTPUT" = '1' ]; then</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _mlredir=1;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> case " $@ " in </pre>
+<pre style="margin: 0px"> *' --no-redirect '*)</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _mlredir=0</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> *' --redirect '*)</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _mlredir=1</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> esac;</pre>
+<pre style="margin: 0px"> if [ $_mlredir -eq 0 ]; then</pre>
+<pre style="margin: 0px"> _module_raw "$@";</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="margin: 0px"> _module_raw "$@" 2>&1;</pre>
+<pre style="margin: 0px"> fi</pre>
+<pre style="margin: 0px">}</pre>
+<pre style="margin: 0px">BASH_FUNC__spack_shell_wrapper%%=() {  for var in DYLD_LIBRARY_PATH DYLD_FALLBACK_LIBRARY_PATH;</pre>
+<pre style="margin: 0px"> do</pre>
+<pre style="margin: 0px"> eval "if [ -n \"\${${var}-}\" ]; then export SPACK_$var=\${${var}}; fi";</pre>
+<pre style="margin: 0px"> done;</pre>
+<pre style="margin: 0px"> if [ -n "${ZSH_VERSION:-}" ]; then</pre>
+<pre style="margin: 0px"> emulate -L sh;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_flags="";</pre>
+<pre style="margin: 0px"> while [ ! -z ${1+x} ] && [ "${1#-}" != "${1}" ]; do</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_flags="$_sp_flags $1";</pre>
+<pre style="margin: 0px"> shift;</pre>
+<pre style="margin: 0px"> done;</pre>
+<pre style="margin: 0px"> if [ -n "$_sp_flags" ] && [ "${_sp_flags#*h}" != "${_sp_flags}" ] || [ "${_sp_flags#*V}" != "${_sp_flags}" ]; then</pre>
+<pre style="margin: 0px"> command spack $_sp_flags "$@";</pre>
+<pre style="margin: 0px"> return;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_subcommand="";</pre>
+<pre style="margin: 0px"> if [ ! -z ${1+x} ]; then</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_subcommand="$1";</pre>
+<pre style="margin: 0px"> shift;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> case $_sp_subcommand in </pre>
+<pre style="margin: 0px"> "cd")</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_arg="";</pre>
+<pre style="margin: 0px"> if [ -n "$1" ]; then</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_arg="$1";</pre>
+<pre style="margin: 0px"> shift;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> if [ "$_sp_arg" = "-h" ] || [ "$_sp_arg" = "--help" ]; then</pre>
+<pre style="margin: 0px"> command spack cd -h;</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="margin: 0px"> LOC="$(SPACK_COLOR="${SPACK_COLOR:-always}" spack location $_sp_arg "$@")";</pre>
+<pre style="margin: 0px"> if [ -d "$LOC" ]; then</pre>
+<pre style="margin: 0px"> cd "$LOC";</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="margin: 0px"> return 1;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> return</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> "env")</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_arg="";</pre>
+<pre style="margin: 0px"> if [ -n "$1" ]; then</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> _sp_arg="$1";</pre>
+<pre style="margin: 0px"> shift;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> if [ "$_sp_arg" = "-h" ] || [ "$_sp_arg" = "--help" ]; then</pre>
+<pre style="margin: 0px"> command spack env -h;</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="margin: 0px"> case $_sp_arg in </pre>
+<pre style="margin: 0px"> activate)</pre>
+<pre style="margin: 0px"> _a=" $@";</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> if [ "${_a#* --sh}" != "$_a" ] || [ "${_a#* --csh}" != "$_a" ] || [ "${_a#* -h}" != "$_a" ] || [ "${_a#* --help}" != "$_a" ]; then</pre>
+<pre style="margin: 0px"> command spack env activate "$@";</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> stdout="$(SPACK_COLOR="${SPACK_COLOR:-always}" command spack $_sp_flags env activate --sh "$@")" || return;</pre>
+<pre style="margin: 0px"> eval "$stdout";</pre>
+<pre style="margin: 0px"> fi</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> deactivate)</pre>
+<pre style="margin: 0px"> _a=" $@";</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> if [ "${_a#* --sh}" != "$_a" ] || [ "${_a#* --csh}" != "$_a" ]; then</pre>
+<pre style="margin: 0px"> command spack env deactivate "$@";</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="margin: 0px"> if [ -n "$*" ]; then</pre>
+<pre style="margin: 0px"> command spack env deactivate -h;</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> stdout="$(SPACK_COLOR="${SPACK_COLOR:-always}" command spack $_sp_flags env deactivate --sh)" || return;</pre>
+<pre style="margin: 0px"> eval "$stdout";</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> fi</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> *)</pre>
+<pre style="margin: 0px"> command spack env $_sp_arg "$@"</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> esac;</pre>
+<pre style="margin: 0px"> fi;</pre>
+<pre style="margin: 0px"> return</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> "load" | "unload")</pre>
+<pre style="margin: 0px"> _a=" $@";</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> if [ "${_a#* --sh}" != "$_a" ] || [ "${_a#* --csh}" != "$_a" ] || [ "${_a#* -h}" != "$_a" ] || [ "${_a#* --list}" != "$_a" ] || [ "${_a#* --help}" != "$_a" ]; then</pre>
+<pre style="margin: 0px"> command spack $_sp_flags $_sp_subcommand "$@";</pre>
+<pre style="margin: 0px"> else</pre>
+<pre style="background-color:#e5ccb3;margin: 0px"> stdout="$(SPACK_COLOR="${SPACK_COLOR:-always}" command spack $_sp_flags $_sp_subcommand --sh "$@")" || return;</pre>
+<pre style="margin: 0px"> eval "$stdout";</pre>
+<pre style="margin: 0px"> fi</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> *)</pre>
+<pre style="margin: 0px"> command spack $_sp_flags $_sp_subcommand "$@"</pre>
+<pre style="margin: 0px"> ;;</pre>
+<pre style="margin: 0px"> esac</pre>
+<pre style="margin: 0px">}</pre>
+<pre style="margin: 0px">BASH_FUNC__module_raw%%=() {  eval "$(/usr/bin/tclsh '/usr/share/Modules/libexec/modulecmd.tcl' bash "$@")";</pre>
+<pre style="margin: 0px"> _mlstatus=$?;</pre>
+<pre style="margin: 0px"> return $_mlstatus</pre>
+<pre style="margin: 0px">}</pre>
+<pre style="margin: 0px">BASH_FUNC_spack%%=() {  : this is a shell function from: /apps/2025/manual_install/spack-x64cpu-1.0.x/share/spack/setup-env.sh;</pre>
+<pre style="margin: 0px"> : the real spack script is here: /apps/2025/manual_install/spack-x64cpu-1.0.x/bin/spack;</pre>
+<pre style="margin: 0px"> _spack_shell_wrapper "$@";</pre>
+<pre style="margin: 0px"> return $?</pre>
+<pre style="margin: 0px">}</pre>
+</div></div><div class="_accordion_box collapsed" ><h3 id="_accordion_header_2" class="_header collapsed" onclick="_click_accordion_header(this)" ><span class="_accordion_box_button">&#x25B6;</span>Path Number Loops Profile for MPI #13.0 - node romeo-c040 - process 3804129 - thread 3804129</h3><div id="_accordion_content_2" class="_content collapsed"><div style="margin-top: 10px; margin-bottom: 10px; background-color: var(--chart_background); overflow-x:auto; overflow-y:hidden; "><div id="chart_cat_1069" style="height:500px;margin-top:20px;" ></div></div>
+<script class="code" >
+  $(document).ready(function(){
+  var plot1069_data = [[13,0,1,1,4,2,0,0,0,],[69.507251188159,0,5.0888514518738,0.040387712419033,4.7253621891141,0.28271397948265,0,0,0,],[69.507251188159,69.507251188159,74.596102640033,74.636490352452,79.361852541566,79.644566521048,79.644566521048,79.644566521048,79.644566521048,],];
+  var plot1069_ticks = ['1','2','3 to 4','5 to 8','9 to 16','17 to 32','33 to 64','> 64','unknown',];
+  var plot1069 = jQuery.jqplot ('chart_cat_1069', plot1069_data, {
+    seriesDefaults: {
+      renderer: jQuery.jqplot.BarRenderer,
+      rendererOptions: {},
+      pointLabels: {show: true      },
+    },
+    axes: {
+      xaxis: {
+        renderer: $.jqplot.CategoryAxisRenderer,ticks: plot1069_ticks,label: 'Coverage Range',labelRenderer: $.jqplot.CanvasAxisLabelRenderer,},
+      yaxis: {label: 'Number of Loops',labelRenderer: $.jqplot.CanvasAxisLabelRenderer,autoscale:true,min:0,},
+      y2axis: {label: 'Coverage (%)',labelRenderer: $.jqplot.CanvasAxisLabelRenderer,autoscale:true,min:0,}
+    },
+    highlighter: {tooltipContentEditor: function (str, seriesIndex, pointIndex) {return plot1069_ticks[pointIndex]+' - '+plot1069_data[seriesIndex][pointIndex];},show: true,showTooltip: true,sizeAdjust: 10,formatString: '%s',tooltipLocation: 'n',useAxesFormatters: false,},
+    legend: {renderer: $.jqplot.EnhancedLegendRenderer, show: true,location: 's',placement: 'outsideGrid',rendererOptions: {numberRows: '1',},},
+    series: [{label:'Number of Loops', yaxis:'yaxis', },{label:'Coverage over Range', yaxis:'y2axis', },{label:'Cumulated Coverage', renderer: $.jqplot.LineRenderer, yaxis:'y2axis', },],
+  });
+});
+</script></div></div><div class="_fixed_box" ><h3 class="_header">Profiling MPI #13.0 - node romeo-c040 - process 3804129 - thread 3804129<span class="tooltip-maqao-button help-maqao" title="" tooltip_id="1" ></span></h3>
+<div class="_content"><div class="_div_table" ><div style="overflow:auto;">
+<table id="_tree_table_96" class="_tree_table"><tr><th class="_freezed_row  _left " style="width:60%;"><span></span>Name</th><th class="_freezed_row " style="width:20%;"><span></span>Module</th><th class="_freezed_row " style="width:10%;"><span></span>Coverage (%)</th><th class="_freezed_row " style="width:10%;"><span></span>Time (s)</th></tr>
+<tr class=" _outer_row"  id="_tr_96_1"  ondblclick="_action_4(this,1,-1, '../functions/ft.C.x_19.html');"  style="cursor:pointer;"><td id="_tr_96_1-1"  data-_i="1" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>fftz2<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_1-2"  data-_i="1" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_1-3"  data-_i="1" data-_j="3"  class=" _centered"  style="font-style: italic;" >23.59</td><td id="_tr_96_1-4"  data-_i="1" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.92</td></tr>
+<tr class="_tree_hidden _tr_96_1"  id="_tr_96_1_1"  ondblclick="_action_4(this,2,-1, '../loops/ft.C.x_70.html');"  style="cursor:pointer;"><td id="_tr_96_1_1-1"  data-_i="2" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 70 - ft.f90:1168-1190 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_1_1-2"  data-_i="2" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_1_1-3"  data-_i="2" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.96</td><td id="_tr_96_1_1-4"  data-_i="2" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.10</td></tr>
+<tr class="_tree_hidden _tr_96_1_1"  id="_tr_96_1_1_1"  ondblclick="_action_4(this,3,-1, '../loops/ft.C.x_72.html');"  style="cursor:pointer;"><td id="_tr_96_1_1_1-1"  data-_i="3" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 72 - ft.f90:1182-1189 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_1_1_1-2"  data-_i="3" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_1_1_1-3"  data-_i="3" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.96</td><td id="_tr_96_1_1_1-4"  data-_i="3" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.10</td></tr>
+<tr class="_tree_hidden _tr_96_1_1_1"  id="_tr_96_1_1_1_1"  ondblclick="_action_4(this,4,-1, '../loops/ft.C.x_71.html');"  style="cursor:pointer;"><td id="_tr_96_1_1_1_1-1"  data-_i="4" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:48px;" >&#x25CB;</span>Loop 71 - ft.f90:1184-1188 - ft.C.x</td><td id="_tr_96_1_1_1_1-2"  data-_i="4" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_1_1_1_1-3"  data-_i="4" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.96</td><td id="_tr_96_1_1_1_1-4"  data-_i="4" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.10</td></tr>
+<tr class="_tree_hidden _tr_96_1"  id="_tr_96_1_2"  ondblclick="_action_4(this,5,-1, '../loops/ft.C.x_74.html');"  style="cursor:pointer;"><td id="_tr_96_1_2-1"  data-_i="5" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 74 - ft.f90:1168-1190 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_1_2-2"  data-_i="5" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_1_2-3"  data-_i="5" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.82</td><td id="_tr_96_1_2-4"  data-_i="5" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.22</td></tr>
+<tr class="_tree_hidden _tr_96_1_2"  id="_tr_96_1_2_1"  ondblclick="_action_4(this,6,-1, '../loops/ft.C.x_76.html');"  style="cursor:pointer;"><td id="_tr_96_1_2_1-1"  data-_i="6" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 76 - ft.f90:1182-1189 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_1_2_1-2"  data-_i="6" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_1_2_1-3"  data-_i="6" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.82</td><td id="_tr_96_1_2_1-4"  data-_i="6" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.22</td></tr>
+<tr class="_tree_hidden _tr_96_1_2_1"  id="_tr_96_1_2_1_1"  ondblclick="_action_4(this,7,-1, '../loops/ft.C.x_75.html');"  style="cursor:pointer;"><td id="_tr_96_1_2_1_1-1"  data-_i="7" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:48px;" >&#x25CB;</span>Loop 75 - ft.f90:1184-1188 - ft.C.x</td><td id="_tr_96_1_2_1_1-2"  data-_i="7" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_1_2_1_1-3"  data-_i="7" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.82</td><td id="_tr_96_1_2_1_1-4"  data-_i="7" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.22</td></tr>
+<tr class=" _outer_row"  id="_tr_96_2"  ondblclick="_action_4(this,8,-1, '../functions/libc.so.6_3691.html');"  style="cursor:pointer;"><td id="_tr_96_2-1"  data-_i="8" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>__memcpy_avx512_unaligned_erms</td><td id="_tr_96_2-2"  data-_i="8" data-_j="2"  class=" _centered"  style="word-break:break-all;" >libc.so.6</td><td id="_tr_96_2-3"  data-_i="8" data-_j="3"  class=" _centered"  style="font-style: italic;" >17.37</td><td id="_tr_96_2-4"  data-_i="8" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.15</td></tr>
+<tr class=" _outer_row"  id="_tr_96_3"  ondblclick="_action_4(this,9,-1, '../functions/ft.C.x_6.html');"  style="cursor:pointer;"><td id="_tr_96_3-1"  data-_i="9" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>ft<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_3-2"  data-_i="9" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_3-3"  data-_i="9" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.64</td><td id="_tr_96_3-4"  data-_i="9" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.06</td></tr>
+<tr class="_tree_hidden _tr_96_3"  id="_tr_96_3_1"  ondblclick="_action_2(this,10,-1, 'Loop 0 - ft.f90:142-211 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_3_1-1"  data-_i="10" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 0 - ft.f90:142-211 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_3_1-2"  data-_i="10" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_3_1-3"  data-_i="10" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.60</td><td id="_tr_96_3_1-4"  data-_i="10" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.05</td></tr>
+<tr class="_tree_hidden _tr_96_3_1"  id="_tr_96_3_1_1"  ondblclick="_action_2(this,11,-1, 'Loop 2 - ft.f90:144-211 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_3_1_1-1"  data-_i="11" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 2 - ft.f90:144-211 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_3_1_1-2"  data-_i="11" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_3_1_1-3"  data-_i="11" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.60</td><td id="_tr_96_3_1_1-4"  data-_i="11" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.05</td></tr>
+<tr class="_tree_hidden _tr_96_3_1_1"  id="_tr_96_3_1_1_1"  ondblclick="_action_4(this,12,-1, '../loops/ft.C.x_3.html');"  style="cursor:pointer;"><td id="_tr_96_3_1_1_1-1"  data-_i="12" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:45px;cursor:pointer;" >&#x25BA;</span>Loop 3 - ft.f90:144-210 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_3_1_1_1-2"  data-_i="12" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_3_1_1_1-3"  data-_i="12" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.60</td><td id="_tr_96_3_1_1_1-4"  data-_i="12" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.05</td></tr>
+<tr class="_tree_hidden _tr_96_3_1_1_1"  id="_tr_96_3_1_1_1_1"  ondblclick="_action_4(this,13,-1, '../loops/ft.C.x_4.html');"  style="cursor:pointer;"><td id="_tr_96_3_1_1_1_1-1"  data-_i="13" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:63px;" >&#x25CB;</span>Loop 4 - ft.f90:207-208 - ft.C.x</td><td id="_tr_96_3_1_1_1_1-2"  data-_i="13" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_3_1_1_1_1-3"  data-_i="13" data-_j="3"  class=" _centered"  style="font-style: italic;" >16.60</td><td id="_tr_96_3_1_1_1_1-4"  data-_i="13" data-_j="4"  class=" _centered"  style="font-style: italic;" >2.05</td></tr>
+<tr class=" _outer_row"  id="_tr_96_4"  ondblclick="_action_4(this,14,-1, '../functions/ft.C.x_23.html');"  style="cursor:pointer;"><td id="_tr_96_4-1"  data-_i="14" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>transpose2_local<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_4-2"  data-_i="14" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_4-3"  data-_i="14" data-_j="3"  class=" _centered"  style="font-style: italic;" >12.80</td><td id="_tr_96_4-4"  data-_i="14" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.59</td></tr>
+<tr class="_tree_hidden _tr_96_4"  id="_tr_96_4_1"  ondblclick="_action_2(this,15,-1, 'Loop 93 - ft.f90:1326-1337 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_4_1-1"  data-_i="15" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 93 - ft.f90:1326-1337 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_4_1-2"  data-_i="15" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_4_1-3"  data-_i="15" data-_j="3"  class=" _centered"  style="font-style: italic;" >12.80</td><td id="_tr_96_4_1-4"  data-_i="15" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.59</td></tr>
+<tr class="_tree_hidden _tr_96_4_1"  id="_tr_96_4_1_1"  ondblclick="_action_2(this,16,-1, 'Loop 94 - ft.f90:1326-1336 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_4_1_1-1"  data-_i="16" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 94 - ft.f90:1326-1336 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_4_1_1-2"  data-_i="16" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_4_1_1-3"  data-_i="16" data-_j="3"  class=" _centered"  style="font-style: italic;" >12.80</td><td id="_tr_96_4_1_1-4"  data-_i="16" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.59</td></tr>
+<tr class="_tree_hidden _tr_96_4_1_1"  id="_tr_96_4_1_1_1"  ondblclick="_action_4(this,17,-1, '../loops/ft.C.x_92.html');"  style="cursor:pointer;"><td id="_tr_96_4_1_1_1-1"  data-_i="17" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:45px;cursor:pointer;" >&#x25BA;</span>Loop 92 - ft.f90:1326-1336 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_4_1_1_1-2"  data-_i="17" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_4_1_1_1-3"  data-_i="17" data-_j="3"  class=" _centered"  style="font-style: italic;" >7.71</td><td id="_tr_96_4_1_1_1-4"  data-_i="17" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.96</td></tr>
+<tr class="_tree_hidden _tr_96_4_1_1_1"  id="_tr_96_4_1_1_1_1"  ondblclick="_action_4(this,18,-1, '../loops/ft.C.x_91.html');"  style="cursor:pointer;"><td id="_tr_96_4_1_1_1_1-1"  data-_i="18" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:63px;" >&#x25CB;</span>Loop 91 - ft.f90:1326-1327 - ft.C.x</td><td id="_tr_96_4_1_1_1_1-2"  data-_i="18" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_4_1_1_1_1-3"  data-_i="18" data-_j="3"  class=" _centered"  style="font-style: italic;" >7.71</td><td id="_tr_96_4_1_1_1_1-4"  data-_i="18" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.96</td></tr>
+<tr class="_tree_hidden _tr_96_4_1_1"  id="_tr_96_4_1_1_2"  ondblclick="_action_4(this,19,-1, '../loops/ft.C.x_95.html');"  style="cursor:pointer;"><td id="_tr_96_4_1_1_2-1"  data-_i="19" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:48px;" >&#x25CB;</span>Loop 95 - ft.f90:1332-1334 - ft.C.x</td><td id="_tr_96_4_1_1_2-2"  data-_i="19" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_4_1_1_2-3"  data-_i="19" data-_j="3"  class=" _centered"  style="font-style: italic;" >5.09</td><td id="_tr_96_4_1_1_2-4"  data-_i="19" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.63</td></tr>
+<tr class=" _outer_row"  id="_tr_96_5"  ondblclick="_action_4(this,20,-1, '../functions/ft.C.x_21.html');"  style="cursor:pointer;"><td id="_tr_96_5-1"  data-_i="20" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>transpose_x_yz<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_5-2"  data-_i="20" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_5-3"  data-_i="20" data-_j="3"  class=" _centered"  style="font-style: italic;" >11.91</td><td id="_tr_96_5-4"  data-_i="20" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.48</td></tr>
+<tr class="_tree_hidden _tr_96_5"  id="_tr_96_5_1"  ondblclick="_action_2(this,21,-1, 'Loop 79 - ft.f90:1242-1399 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_5_1-1"  data-_i="21" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 79 - ft.f90:1242-1399 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_5_1-2"  data-_i="21" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_5_1-3"  data-_i="21" data-_j="3"  class=" _centered"  style="font-style: italic;" >11.91</td><td id="_tr_96_5_1-4"  data-_i="21" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.48</td></tr>
+<tr class="_tree_hidden _tr_96_5_1"  id="_tr_96_5_1_1"  ondblclick="_action_4(this,22,-1, '../loops/ft.C.x_80.html');"  style="cursor:pointer;"><td id="_tr_96_5_1_1-1"  data-_i="22" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 80 - ft.f90:1242-1398 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_5_1_1-2"  data-_i="22" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_5_1_1-3"  data-_i="22" data-_j="3"  class=" _centered"  style="font-style: italic;" >11.91</td><td id="_tr_96_5_1_1-4"  data-_i="22" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.48</td></tr>
+<tr class="_tree_hidden _tr_96_5_1_1"  id="_tr_96_5_1_1_1"  ondblclick="_action_4(this,23,-1, '../loops/ft.C.x_82.html');"  style="cursor:pointer;"><td id="_tr_96_5_1_1_1-1"  data-_i="23" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:48px;" >&#x25CB;</span>Loop 82 - ft.f90:1396-1396 - ft.C.x</td><td id="_tr_96_5_1_1_1-2"  data-_i="23" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_5_1_1_1-3"  data-_i="23" data-_j="3"  class=" _centered"  style="font-style: italic;" >11.91</td><td id="_tr_96_5_1_1_1-4"  data-_i="23" data-_j="4"  class=" _centered"  style="font-style: italic;" >1.48</td></tr>
+<tr class=" _outer_row"  id="_tr_96_6"  ondblclick="_action_4(this,24,-1, '../functions/ft.C.x_14.html');"  style="cursor:pointer;"><td id="_tr_96_6-1"  data-_i="24" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>cffts1<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_6-2"  data-_i="24" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_6-3"  data-_i="24" data-_j="3"  class=" _centered"  style="font-style: italic;" >7.75</td><td id="_tr_96_6-4"  data-_i="24" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.96</td></tr>
+<tr class="_tree_hidden _tr_96_6"  id="_tr_96_6_1"  ondblclick="_action_2(this,25,-1, 'Loop 35 - ft.f90:912-933 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_6_1-1"  data-_i="25" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 35 - ft.f90:912-933 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_6_1-2"  data-_i="25" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_6_1-3"  data-_i="25" data-_j="3"  class=" _centered"  style="font-style: italic;" >7.75</td><td id="_tr_96_6_1-4"  data-_i="25" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.96</td></tr>
+<tr class="_tree_hidden _tr_96_6_1"  id="_tr_96_6_1_1"  ondblclick="_action_2(this,26,-1, 'Loop 36 - ft.f90:913-932 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_6_1_1-1"  data-_i="26" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 36 - ft.f90:913-932 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_6_1_1-2"  data-_i="26" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_6_1_1-3"  data-_i="26" data-_j="3"  class=" _centered"  style="font-style: italic;" >7.75</td><td id="_tr_96_6_1_1-4"  data-_i="26" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.96</td></tr>
+<tr class="_tree_hidden _tr_96_6_1_1"  id="_tr_96_6_1_1_1"  ondblclick="_action_2(this,27,-1, 'Loop 40 - ft.f90:916-918 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_6_1_1_1-1"  data-_i="27" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:45px;cursor:pointer;" >&#x25BA;</span>Loop 40 - ft.f90:916-918 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_6_1_1_1-2"  data-_i="27" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_6_1_1_1-3"  data-_i="27" data-_j="3"  class=" _centered"  style="font-style: italic;" >5.17</td><td id="_tr_96_6_1_1_1-4"  data-_i="27" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.64</td></tr>
+<tr class="_tree_hidden _tr_96_6_1_1_1"  id="_tr_96_6_1_1_1_1"  ondblclick="_action_4(this,28,-1, '../loops/ft.C.x_41.html');"  style="cursor:pointer;"><td id="_tr_96_6_1_1_1_1-1"  data-_i="28" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:63px;" >&#x25CB;</span>Loop 41 - ft.f90:916-917 - ft.C.x</td><td id="_tr_96_6_1_1_1_1-2"  data-_i="28" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_6_1_1_1_1-3"  data-_i="28" data-_j="3"  class=" _centered"  style="font-style: italic;" >5.17</td><td id="_tr_96_6_1_1_1_1-4"  data-_i="28" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.64</td></tr>
+<tr class="_tree_hidden _tr_96_6_1_1"  id="_tr_96_6_1_1_2"  ondblclick="_action_2(this,29,-1, 'Loop 37 - ft.f90:928-930 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_6_1_1_2-1"  data-_i="29" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:45px;cursor:pointer;" >&#x25BA;</span>Loop 37 - ft.f90:928-930 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_6_1_1_2-2"  data-_i="29" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_6_1_1_2-3"  data-_i="29" data-_j="3"  class=" _centered"  style="font-style: italic;" >2.58</td><td id="_tr_96_6_1_1_2-4"  data-_i="29" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.32</td></tr>
+<tr class="_tree_hidden _tr_96_6_1_1_2"  id="_tr_96_6_1_1_2_1"  ondblclick="_action_4(this,30,-1, '../loops/ft.C.x_38.html');"  style="cursor:pointer;"><td id="_tr_96_6_1_1_2_1-1"  data-_i="30" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:63px;" >&#x25CB;</span>Loop 38 - ft.f90:928-929 - ft.C.x</td><td id="_tr_96_6_1_1_2_1-2"  data-_i="30" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_6_1_1_2_1-3"  data-_i="30" data-_j="3"  class=" _centered"  style="font-style: italic;" >2.58</td><td id="_tr_96_6_1_1_2_1-4"  data-_i="30" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.32</td></tr>
+<tr class=" _outer_row"  id="_tr_96_7"  ondblclick="_action_4(this,31,-1, '../functions/ft.C.x_15.html');"  style="cursor:pointer;"><td id="_tr_96_7-1"  data-_i="31" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>cffts2<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_7-2"  data-_i="31" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_7-3"  data-_i="31" data-_j="3"  class=" _centered"  style="font-style: italic;" >3.80</td><td id="_tr_96_7-4"  data-_i="31" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.47</td></tr>
+<tr class="_tree_hidden _tr_96_7"  id="_tr_96_7_1"  ondblclick="_action_2(this,32,-1, 'Loop 44 - ft.f90:959-980 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_7_1-1"  data-_i="32" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 44 - ft.f90:959-980 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_7_1-2"  data-_i="32" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_7_1-3"  data-_i="32" data-_j="3"  class=" _centered"  style="font-style: italic;" >3.72</td><td id="_tr_96_7_1-4"  data-_i="32" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.46</td></tr>
+<tr class="_tree_hidden _tr_96_7_1"  id="_tr_96_7_1_1"  ondblclick="_action_2(this,33,-1, 'Loop 45 - ft.f90:960-979 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_7_1_1-1"  data-_i="33" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 45 - ft.f90:960-979 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_7_1_1-2"  data-_i="33" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_7_1_1-3"  data-_i="33" data-_j="3"  class=" _centered"  style="font-style: italic;" >3.72</td><td id="_tr_96_7_1_1-4"  data-_i="33" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.46</td></tr>
+<tr class="_tree_hidden _tr_96_7_1_1"  id="_tr_96_7_1_1_1"  ondblclick="_action_4(this,34,-1, '../loops/ft.C.x_49.html');"  style="cursor:pointer;"><td id="_tr_96_7_1_1_1-1"  data-_i="34" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:45px;cursor:pointer;" >&#x25BA;</span>Loop 49 - ft.f90:963-965 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_7_1_1_1-2"  data-_i="34" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_7_1_1_1-3"  data-_i="34" data-_j="3"  class=" _centered"  style="font-style: italic;" >2.26</td><td id="_tr_96_7_1_1_1-4"  data-_i="34" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.28</td></tr>
+<tr class="_tree_hidden _tr_96_7_1_1_1"  id="_tr_96_7_1_1_1_1"  ondblclick="_action_4(this,35,-1, '../loops/ft.C.x_51.html');"  style="cursor:pointer;"><td id="_tr_96_7_1_1_1_1-1"  data-_i="35" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:63px;" >&#x25CB;</span>Loop 51 - ft.f90:963-963 - ft.C.x</td><td id="_tr_96_7_1_1_1_1-2"  data-_i="35" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_7_1_1_1_1-3"  data-_i="35" data-_j="3"  class=" _centered"  style="font-style: italic;" >2.26</td><td id="_tr_96_7_1_1_1_1-4"  data-_i="35" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.28</td></tr>
+<tr class="_tree_hidden _tr_96_7_1_1"  id="_tr_96_7_1_1_2"  ondblclick="_action_4(this,36,-1, '../loops/ft.C.x_46.html');"  style="cursor:pointer;"><td id="_tr_96_7_1_1_2-1"  data-_i="36" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:45px;cursor:pointer;" >&#x25BA;</span>Loop 46 - ft.f90:975-977 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_7_1_1_2-2"  data-_i="36" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_7_1_1_2-3"  data-_i="36" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.45</td><td id="_tr_96_7_1_1_2-4"  data-_i="36" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.18</td></tr>
+<tr class="_tree_hidden _tr_96_7_1_1_2"  id="_tr_96_7_1_1_2_1"  ondblclick="_action_4(this,37,-1, '../loops/ft.C.x_48.html');"  style="cursor:pointer;"><td id="_tr_96_7_1_1_2_1-1"  data-_i="37" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:63px;" >&#x25CB;</span>Loop 48 - ft.f90:975-975 - ft.C.x</td><td id="_tr_96_7_1_1_2_1-2"  data-_i="37" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_7_1_1_2_1-3"  data-_i="37" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.45</td><td id="_tr_96_7_1_1_2_1-4"  data-_i="37" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.18</td></tr>
+<tr class=" _outer_row"  id="_tr_96_8"  ondblclick="_action_4(this,38,-1, '../functions/ft.C.x_22.html');"  style="cursor:pointer;"><td id="_tr_96_8-1"  data-_i="38" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>transpose_xy_z<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_8-2"  data-_i="38" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_8-3"  data-_i="38" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.37</td><td id="_tr_96_8-4"  data-_i="38" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.17</td></tr>
+<tr class="_tree_hidden _tr_96_8"  id="_tr_96_8_1"  ondblclick="_action_2(this,39,-1, 'Loop 83 - ft.f90:1266-1399 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_8_1-1"  data-_i="39" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 83 - ft.f90:1266-1399 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_8_1-2"  data-_i="39" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_8_1-3"  data-_i="39" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.37</td><td id="_tr_96_8_1-4"  data-_i="39" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.17</td></tr>
+<tr class="_tree_hidden _tr_96_8_1"  id="_tr_96_8_1_1"  ondblclick="_action_2(this,40,-1, 'Loop 84 - ft.f90:1266-1398 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_8_1_1-1"  data-_i="40" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 84 - ft.f90:1266-1398 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_8_1_1-2"  data-_i="40" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_8_1_1-3"  data-_i="40" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.37</td><td id="_tr_96_8_1_1-4"  data-_i="40" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.17</td></tr>
+<tr class="_tree_hidden _tr_96_8_1_1"  id="_tr_96_8_1_1_1"  ondblclick="_action_4(this,41,-1, '../loops/ft.C.x_86.html');"  style="cursor:pointer;"><td id="_tr_96_8_1_1_1-1"  data-_i="41" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:48px;" >&#x25CB;</span>Loop 86 - ft.f90:1396-1396 - ft.C.x</td><td id="_tr_96_8_1_1_1-2"  data-_i="41" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_8_1_1_1-3"  data-_i="41" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.37</td><td id="_tr_96_8_1_1_1-4"  data-_i="41" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.17</td></tr>
+<tr class=" _outer_row"  id="_tr_96_9"  ondblclick="_action_4(this,42,-1, '../functions/mca_btl_vader.so_21.html');"  style="cursor:pointer;"><td id="_tr_96_9-1"  data-_i="42" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>mca_btl_vader_component_progress</td><td id="_tr_96_9-2"  data-_i="42" data-_j="2"  class=" _centered"  style="word-break:break-all;" >mca_btl_vader.so</td><td id="_tr_96_9-3"  data-_i="42" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.25</td><td id="_tr_96_9-4"  data-_i="42" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.15</td></tr>
+<tr class=" _outer_row"  id="_tr_96_10"  ondblclick="_action_4(this,43,-1, '../functions/ft.C.x_18.html');"  style="cursor:pointer;"><td id="_tr_96_10-1"  data-_i="43" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>cfftz<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_10-2"  data-_i="43" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_10-3"  data-_i="43" data-_j="3"  class=" _centered"  style="font-style: italic;" >1.13</td><td id="_tr_96_10-4"  data-_i="43" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.14</td></tr>
+<tr class="_tree_hidden _tr_96_10"  id="_tr_96_10_1"  ondblclick="_action_4(this,44,-1, '../loops/ft.C.x_66.html');"  style="cursor:pointer;"><td id="_tr_96_10_1-1"  data-_i="44" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 66 - ft.f90:1130-1132 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_10_1-2"  data-_i="44" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_10_1-3"  data-_i="44" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.93</td><td id="_tr_96_10_1-4"  data-_i="44" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.12</td></tr>
+<tr class="_tree_hidden _tr_96_10_1"  id="_tr_96_10_1_1"  ondblclick="_action_4(this,45,-1, '../loops/ft.C.x_68.html');"  style="cursor:pointer;"><td id="_tr_96_10_1_1-1"  data-_i="45" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:33px;" >&#x25CB;</span>Loop 68 - ft.f90:1130-1130 - ft.C.x</td><td id="_tr_96_10_1_1-2"  data-_i="45" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_10_1_1-3"  data-_i="45" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.93</td><td id="_tr_96_10_1_1-4"  data-_i="45" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.12</td></tr>
+<tr class=" _outer_row"  id="_tr_96_11"  ondblclick="_action_4(this,46,-1, '../functions/ft.C.x_53.html');"  style="cursor:pointer;"><td id="_tr_96_11-1"  data-_i="46" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>vranlc<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_11-2"  data-_i="46" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_11-3"  data-_i="46" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.65</td><td id="_tr_96_11-4"  data-_i="46" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.08</td></tr>
+<tr class="_tree_hidden _tr_96_11"  id="_tr_96_11_1"  ondblclick="_action_4(this,47,-1, '../loops/ft.C.x_147.html');"  style="cursor:pointer;"><td id="_tr_96_11_1-1"  data-_i="47" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:18px;" >&#x25CB;</span>Loop 147 - randi8.f90:60-62 - ft.C.x</td><td id="_tr_96_11_1-2"  data-_i="47" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_11_1-3"  data-_i="47" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.65</td><td id="_tr_96_11_1-4"  data-_i="47" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.08</td></tr>
+<tr class=" _outer_row"  id="_tr_96_12"  ondblclick="_action_4(this,48,-1, '../functions/mca_btl_vader.so_23.html');"  style="cursor:pointer;"><td id="_tr_96_12-1"  data-_i="48" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>mca_btl_vader_poll_handle_frag</td><td id="_tr_96_12-2"  data-_i="48" data-_j="2"  class=" _centered"  style="word-break:break-all;" >mca_btl_vader.so</td><td id="_tr_96_12-3"  data-_i="48" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.57</td><td id="_tr_96_12-4"  data-_i="48" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.07</td></tr>
+<tr class=" _outer_row"  id="_tr_96_13"  ondblclick="_action_4(this,49,-1, '../functions/libm.so.6_636.html');"  style="cursor:pointer;"><td id="_tr_96_13-1"  data-_i="49" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>f64xsubf128</td><td id="_tr_96_13-2"  data-_i="49" data-_j="2"  class=" _centered"  style="word-break:break-all;" >libm.so.6</td><td id="_tr_96_13-3"  data-_i="49" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.36</td><td id="_tr_96_13-4"  data-_i="49" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.04</td></tr>
+<tr class=" _outer_row"  id="_tr_96_14"  ondblclick="_action_4(this,50,-1, '../functions/libm.so.6_358.html');"  style="cursor:pointer;"><td id="_tr_96_14-1"  data-_i="50" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>exp</td><td id="_tr_96_14-2"  data-_i="50" data-_j="2"  class=" _centered"  style="word-break:break-all;" >libm.so.6</td><td id="_tr_96_14-3"  data-_i="50" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.28</td><td id="_tr_96_14-4"  data-_i="50" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.04</td></tr>
+<tr class=" _outer_row"  id="_tr_96_15"  ondblclick="_action_4(this,51,-1, '../functions/libopen-pal.so.40.30.4_1256.html');"  style="cursor:pointer;"><td id="_tr_96_15-1"  data-_i="51" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>opal_timer_linux_get_cycles_sys_timer</td><td id="_tr_96_15-2"  data-_i="51" data-_j="2"  class=" _centered"  style="word-break:break-all;" >libopen-pal.so.40.30.4</td><td id="_tr_96_15-3"  data-_i="51" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.12</td><td id="_tr_96_15-4"  data-_i="51" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.01</td></tr>
+<tr class=" _outer_row"  id="_tr_96_16"  ondblclick="_action_4(this,52,-1, '../functions/ft.C.x_11.html');"  style="cursor:pointer;"><td id="_tr_96_16-1"  data-_i="52" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:0px;cursor:pointer;" >&#x25BA;</span>compute_indexmap<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_16-2"  data-_i="52" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ft.C.x</td><td id="_tr_96_16-3"  data-_i="52" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.08</td><td id="_tr_96_16-4"  data-_i="52" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.01</td></tr>
+<tr class="_tree_hidden _tr_96_16"  id="_tr_96_16_1"  ondblclick="_action_2(this,53,-1, 'Loop 27 - ft.f90:698-708 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_16_1-1"  data-_i="53" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:15px;cursor:pointer;" >&#x25BA;</span>Loop 27 - ft.f90:698-708 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_16_1-2"  data-_i="53" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_16_1-3"  data-_i="53" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.08</td><td id="_tr_96_16_1-4"  data-_i="53" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.01</td></tr>
+<tr class="_tree_hidden _tr_96_16_1"  id="_tr_96_16_1_1"  ondblclick="_action_2(this,54,-1, 'Loop 28 - ft.f90:699-707 - ft.C.x');"  style="cursor:pointer;"><td id="_tr_96_16_1_1-1"  data-_i="54" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span onclick="_click_tree(this)" style="margin-right:5px;margin-left:30px;cursor:pointer;" >&#x25BA;</span>Loop 28 - ft.f90:699-707 - ft.C.x<span onclick="_click_expand(this)" class="span_expand">&#43;</span></td><td id="_tr_96_16_1_1-2"  data-_i="54" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_16_1_1-3"  data-_i="54" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.08</td><td id="_tr_96_16_1_1-4"  data-_i="54" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.01</td></tr>
+<tr class="_tree_hidden _tr_96_16_1_1"  id="_tr_96_16_1_1_1"  ondblclick="_action_4(this,55,-1, '../loops/ft.C.x_29.html');"  style="cursor:pointer;"><td id="_tr_96_16_1_1_1-1"  data-_i="55" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:48px;" >&#x25CB;</span>Loop 29 - ft.f90:703-705 - ft.C.x</td><td id="_tr_96_16_1_1_1-2"  data-_i="55" data-_j="2"  class=" _centered"  style="word-break:break-all;" ></td><td id="_tr_96_16_1_1_1-3"  data-_i="55" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.08</td><td id="_tr_96_16_1_1_1-4"  data-_i="55" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.01</td></tr>
+<tr class=" _outer_row"  id="_tr_96_17"  ondblclick="_action_4(this,56,-1, '../functions/libc.so.6_1126.html');"  style="cursor:pointer;"><td id="_tr_96_17-1"  data-_i="56" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>__GI___pthread_mutex_unlock_usercnt</td><td id="_tr_96_17-2"  data-_i="56" data-_j="2"  class=" _centered"  style="word-break:break-all;" >libc.so.6</td><td id="_tr_96_17-3"  data-_i="56" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.04</td><td id="_tr_96_17-4"  data-_i="56" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.00</td></tr>
+<tr class=" _outer_row"  id="_tr_96_18"  ondblclick="_action_4(this,57,-1, '../functions/libopen-pal.so.40.30.4_182.html');"  style="cursor:pointer;"><td id="_tr_96_18-1"  data-_i="57" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>opal_progress</td><td id="_tr_96_18-2"  data-_i="57" data-_j="2"  class=" _centered"  style="word-break:break-all;" >libopen-pal.so.40.30.4</td><td id="_tr_96_18-3"  data-_i="57" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.04</td><td id="_tr_96_18-4"  data-_i="57" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.00</td></tr>
+<tr class=" _outer_row"  id="_tr_96_19"  ondblclick="_action_4(this,58,-1, '../functions/ld-linux-x86-64.so.2_40.html');"  style="cursor:pointer;"><td id="_tr_96_19-1"  data-_i="58" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>do_lookup_x</td><td id="_tr_96_19-2"  data-_i="58" data-_j="2"  class=" _centered"  style="word-break:break-all;" >ld-linux-x86-64.so.2</td><td id="_tr_96_19-3"  data-_i="58" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.04</td><td id="_tr_96_19-4"  data-_i="58" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.00</td></tr>
+<tr class=" _outer_row"  id="_tr_96_20"  ondblclick="_action_4(this,59,-1, '../functions/mca_btl_vader.so_30.html');"  style="cursor:pointer;"><td id="_tr_96_20-1"  data-_i="59" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>mca_btl_vader_rdma_frag_advance</td><td id="_tr_96_20-2"  data-_i="59" data-_j="2"  class=" _centered"  style="word-break:break-all;" >mca_btl_vader.so</td><td id="_tr_96_20-3"  data-_i="59" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.04</td><td id="_tr_96_20-4"  data-_i="59" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.00</td></tr>
+<tr class=" _outer_row"  id="_tr_96_21"  ondblclick="_action_4(this,60,-1, '../functions/mca_coll_libnbc.so_9.html');"  style="cursor:pointer;"><td id="_tr_96_21-1"  data-_i="60" data-_j="1"  class=" _left"  style="word-break:break-all;" ><span style="margin-right:10px;margin-left:3px;" >&#x25CB;</span>ompi_coll_libnbc_progress</td><td id="_tr_96_21-2"  data-_i="60" data-_j="2"  class=" _centered"  style="word-break:break-all;" >mca_coll_libnbc.so</td><td id="_tr_96_21-3"  data-_i="60" data-_j="3"  class=" _centered"  style="font-style: italic;" >0.04</td><td id="_tr_96_21-4"  data-_i="60" data-_j="4"  class=" _centered"  style="font-style: italic;" >0.00</td></tr>
+</table></div>
+</div>
+<script>
+function _action_2 (obj, i, j, p){open("../loops/empty_loop.html?loop="+p+"");}
+function _action_4 (obj, i, j, p){open(""+p+"");}
+</script>
+<script>
+function getPos(el) {
+  for (var lx=0, ly=0;
+      el != null;
+      lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+  return {x: lx,y: ly};
+}
+function _onresize () {
+  __maqao_legacy_onresize ();
+  var d = document.getElementById ("_tree_table_96").parentNode;
+  d.style.maxHeight = (window.innerHeight - getPos (d).y - 20)+"px";
+}
+window.onresize = _onresize;
+addLoadEvent(function(){
+  const queryString = window.location.search;
+  const params = new URLSearchParams(queryString);
+  let origin_thread = params.get("origin");
+  if (origin_thread
+  &&  origin_thread !== "romeo-c040_3804129_3804129") {
+    let e = document.getElementById ("warning_other_thread");
+    if (e) {
+       let elems = origin_thread.split ("_");
+       let tid   = elems[elems.length - 1];
+       let pid   = elems[elems.length - 2];
+       let node  = "";
+       for (let i = 0; i < elems.length - 2; i++) {
+          node += elems[i];
+       }
+       e.innerHTML = "<p>Warning ! Current profile is not the requested thread {node = "+node+"; PID = "+pid+"; TID = "+tid+"} but corresponds to one with a similar structure.</p>"+                     "<p>In order to reduce disk usage, similar threads profiles have not been generated. To generate one profile for each thread, refresh the report adding the option --reduce-threads-files=off</p>";       e = document.getElementById ("warning_other_thread_box");
+       e.style.display = "";    }
+  }
+  _onresize ();
+});
+</script>
+
+  <div id="MaqaoModal" class="maqao_modal">
+    <div class="maqao_modal-content">
+      <div class="maqao_modal-header">
+        <span class="maqao_close">&times;</span>
+      </div>
+      <div id="maqao_modal-body" class="maqao_modal-body">
+      </div>
+    </div>
+  </div>
+</div><script>
+var tooltips_texts = ['Environment variables defined for for the thread.<br/>A value is colored in <span style="background:#e5ccb3; width:20px;">orange</span> when it changes<br/>across threads in a single run.',
+'Coverage and Time are inclusive metrics.'];
+var modal = document.getElementById('MaqaoModal');
+var span = document.getElementsByClassName("maqao_close")[0];
+span.onclick = function() {
+    modal.style.display = "none";
+}
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v2 - v1 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx) === '' ? -1: (getCellValue(asc ? a : b, idx).replace(/\s/g,'')), 
+      getCellValue(asc ? b : a, idx) === '' ? -1: (getCellValue(asc ? b : a, idx).replace(/\s/g,'')));
+addLoadEvent(function(){
+  document.querySelectorAll('._fixed_table:not(._no_auto_sorting) th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    // Remove all symbols in header
+    table.querySelectorAll('th').forEach(function (e) {
+      e.firstChild.textContent = "";
+    });
+    // Change the symbol on the clicked header
+    if (this.asc != true) {
+      th.firstChild.textContent = "\u25BC";
+    }
+    else {
+      th.firstChild.textContent = "\u25B2";
+    }
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        .forEach(tr => table.appendChild(tr) );
+  })));
+});
+addLoadEvent(function(){
+  document.querySelectorAll('._tree_table:not(._no_auto_sorting) th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    // Remove all symbols in header
+    table.querySelectorAll('th').forEach(function (e) {
+      e.firstChild.textContent = "";
+    });
+    // Change the symbol on the clicked header
+    if (this.asc != true) {
+      th.firstChild.textContent = "\u25BC";
+    }
+    else {
+      th.firstChild.textContent = "\u25B2";
+    }
+    let last_id = "";
+    const t_outermost = new Array ();
+    const t_children  = new Map ();
+    for (let i = 1, row; row = table.rows[i]; i++) {
+      if (row.classList.contains ("_outer_row")) {
+        t_outermost.push (row);
+        last_id = row.id;
+        t_children [last_id] = new Array ();
+      }
+      else {
+        t_children [last_id].push (row);
+      }
+    }
+    t_outermost.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc));
+    for (let i = 0, row; row = t_outermost[i]; i++) {
+      table.appendChild(row)
+      for (let j = 0, child; child = t_children[row.id][j]; j++) {
+        table.appendChild(child)
+      }
+    }
+  })));
+});
+function _check_all_checkbox_ (obj_id, opts_ids) {
+  var obj   = document.getElementById (obj_id);
+  var opts  = window[opts_ids];
+  var count = 0
+  for (i = 0; i < opts.length; i++) {
+    var obj_s = document.getElementById(opts[i]);
+    if (obj_s && obj_s.checked) {
+      count ++;
+    }
+  }
+  if (count == 0) {
+    obj.value = "Select all";
+  }
+  else if (count == opts.length) {
+    obj.value = "Select none";
+  }
+}
+// Fonction for table selector
+function click_table_menu (c, obj_id, opt_ids) {
+  var is_checked = document.getElementById (c).checked;
+  localStorage.setItem(c, is_checked);
+  $("."+c).each(function(index, element) {
+    if (is_checked) {
+      element.classList.remove("_tcol_hidden");
+    }
+    else {
+      element.classList.add("_tcol_hidden");
+    }
+  });
+  if (obj_id != undefined) {
+    _check_all_checkbox_ (obj_id, opt_ids)
+  }
+}
+function set_all_table_menu (obj, var_opt_ids) {
+  var opt_ids = window[var_opt_ids];
+  var is_selected = true
+  if (obj.value == "Select all") {
+    is_selected = false;
+  }
+  for (i = 0; i < opt_ids.length; i++) {
+    var obj_s = document.getElementById(opt_ids[i]);
+    if (obj_s && is_selected == obj_s.checked) {
+      obj_s.checked = !obj_s.checked;
+      click_table_menu (opt_ids[i]);
+    }
+  }
+  if (is_selected == false) {
+    obj.value = "Select none";
+  } else {
+    obj.value = "Select all";
+  }
+  localStorage.setItem(obj.id, obj.value);
+}
+// Script for accordion box
+function _click_accordion_header(obj) {
+  var content = obj.nextSibling;
+  content.classList.toggle('collapsed');
+  obj.classList.toggle('collapsed');
+  obj.parentNode.classList.toggle('collapsed');
+  // Check if the box must be openned ...
+  if (obj.classList.contains ('collapsed'))
+  {
+    obj.firstChild.textContent = "\u25B6";
+  }
+  // or closed.
+  else 
+  {
+    obj.firstChild.textContent = "\u25BC";
+  }
+  if (typeof _onresize === "function") {
+    _onresize ();
+  }
+}
+  // Script for paged table
+function _click_paged_prev(obj) {
+  var pages_content_id = '_paged_tables_page_' + obj.parentNode.parentNode.id.substr (obj.parentNode.parentNode.id.lastIndexOf('_') + 1);
+  var pages_content = document.getElementById(pages_content_id).innerHTML;
+  var max_pages = pages_content.substr (pages_content.lastIndexOf('/') + 1);
+  var cur_page  = pages_content.substring (pages_content.lastIndexOf(' ') + 1, pages_content.lastIndexOf('/'));
+  max_pages = Number (max_pages);
+  cur_page  = Number (cur_page);
+  if (cur_page > 1) {
+    var div_paged = obj.parentNode.parentNode.id;
+    var i;
+    var x = document.getElementsByClassName(div_paged + '_' + (cur_page - 1));
+    for (i = 0; i < x.length; i++) {
+      x[i].classList.toggle('_paged_hidden');
+    }
+    x = document.getElementsByClassName(div_paged + '_' + (cur_page - 2));
+    for (i = 0; i < x.length; i++) {
+      x[i].classList.toggle('_paged_hidden');
+    }
+  document.getElementById(pages_content_id).textContent = "Page " + (cur_page - 1) + "/" + max_pages;
+  }
+}
+function _click_paged_next(obj) {
+  var pages_content_id = '_paged_tables_page_' + obj.parentNode.parentNode.id.substr (obj.parentNode.parentNode.id.lastIndexOf('_') + 1);
+  var pages_content = document.getElementById(pages_content_id).innerHTML;
+  var max_pages = pages_content.substr (pages_content.lastIndexOf('/') + 1);
+  var cur_page  = pages_content.substring (pages_content.lastIndexOf(' ') + 1, pages_content.lastIndexOf('/'));
+  max_pages = Number (max_pages);
+  cur_page  = Number (cur_page);
+  if (cur_page < max_pages) {
+    var div_paged = obj.parentNode.parentNode.id;
+    var i;
+    var x = document.getElementsByClassName(div_paged + '_' + (cur_page - 1));
+    for (i = 0; i < x.length; i++) {
+      x[i].classList.toggle('_paged_hidden');
+    }
+    x = document.getElementsByClassName(div_paged + '_' + cur_page);
+    for (i = 0; i < x.length; i++) {
+      x[i].classList.toggle('_paged_hidden');
+    }
+    document.getElementById(pages_content_id).textContent = "Page " + (cur_page + 1) + "/" + max_pages;
+  }
+}
+// Function for tree table
+function _click_tree(obj) {
+  if (obj.innerHTML == "\u25BA") {
+    obj.textContent = "\u25BC";
+    // Open childs
+    var x = document.getElementsByClassName(obj.parentNode.parentNode.id);
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.toggle('_tree_hidden');
+    }
+  }
+  else if (obj.innerHTML == "\u25BC") {
+    obj.textContent = "\u25BA";
+    // Close all childs
+    var trs = document.getElementsByTagName('tr');
+    var r   = obj.parentNode.parentNode.id+'_';
+    var re  = new RegExp (r, "g");
+    for (var i = 0; i < trs.length; i++) {
+      var s = trs[i].id+""
+      if (s.match(re)) {
+        var o = document.getElementById(s);
+        if (! o.classList.contains('_tree_hidden')) {
+          o.classList.toggle('_tree_hidden');
+        }
+        if (o.firstChild.firstChild.textContent == "\u25BC") {
+          o.firstChild.firstChild.textContent = "\u25BA";
+        }
+        if (o.firstChild.childNodes.length == 3) {
+          o.firstChild.childNodes[2].textContent = '+';
+        }
+      }
+    }
+    if (obj.parentNode.childNodes.length == 3) {
+      obj.parentNode.childNodes[2].textContent = '+';
+    }
+  }
+}
+function _click_expand (obj) {
+  var trs = document.getElementsByTagName('tr');
+  var r   = obj.parentNode.parentNode.id+'_';
+  var re  = new RegExp (r, "g");
+  // Symbole + => expand all
+  if (obj.textContent == "+") {
+    for (var i = 0; i < trs.length; i++) {
+      var s = trs[i].id+"";
+      if (s.match(re)) {
+        var o = document.getElementById(s);
+        if (o.classList.contains('_tree_hidden')) {
+           o.classList.toggle('_tree_hidden');
+        }
+        if (o.firstChild.firstChild.textContent == "\u25BA") {
+          o.firstChild.firstChild.textContent = "\u25BC";
+        }
+        if (o.firstChild.childNodes.length == 3) {
+          o.firstChild.childNodes[2].textContent = '\u2010';
+        }
+      }
+    }
+    var o = obj.parentNode.parentNode;
+    if (o.firstChild.firstChild.textContent == "\u25BA") {
+      o.firstChild.firstChild.textContent = "\u25BC";
+    }
+    obj.textContent = "\u2010";
+  }
+  // Symbole - => collapse all
+  else {
+    for (var i = 0; i < trs.length; i++) {
+      var s = trs[i].id+"";
+      if (s.match(re)) {
+        var o = document.getElementById(s);
+        if (! o.classList.contains('_tree_hidden')) {
+           o.classList.toggle('_tree_hidden');
+        }
+        if (o.firstChild.firstChild.textContent == "\u25BC") {
+          o.firstChild.firstChild.textContent = "\u25BA";
+        }
+        if (o.firstChild.childNodes.length == 3) {
+          o.firstChild.childNodes[2].textContent = '+';
+        }
+      }
+    }
+    var o = obj.parentNode.parentNode;
+    if (o.firstChild.firstChild.textContent == "\u25BC") {
+      o.firstChild.firstChild.textContent = "\u25BA";
+    }
+    obj.textContent = "+";
+  }
+}
+// Hide unselected tabs
+addLoadEvent(function(){
+  var x = document.getElementsByClassName("_tab_header_li");
+  for (var i = 0; i < x.length; i++) {
+    if (x[i].classList.contains("selected_tab") == false) {
+      var e = document.getElementById (x[i].dataset.tab);
+      e.style.display = "none";
+    }
+  }
+});
+// Change tab
+function change_tab (e, baseId) {
+  // Handle tabs
+  var i = 1;
+  while (true) {
+    var id = baseId + i;
+    var t = document.getElementById (id);
+    if (t == null) {
+      break;
+    }
+    if (id == e.dataset.tab) {
+      t.style.removeProperty("display");
+    }
+    else {
+      t.style.display = "none";
+    }
+    i = i + 1;
+  }
+  // Handle headers
+  $(e).siblings().each( function () {
+    this.classList.remove("selected_tab");
+  });
+  e.classList.add("selected_tab");
+}
+function __maqao_legacy_onresize () {
+  var obj = document.getElementById("spacer_page_title");
+  if (obj) {
+    obj.style.height = (document.getElementById("page_title").clientHeight + 20)+"px";
+  }
+  var obj = document.getElementById("page_title");
+  if (obj) {
+    var elems = document.getElementsByClassName ("_first_menu_level")
+    if (obj.clientHeight < 90) {
+      for (var i = 0; i < elems.length; i++) {
+        elems.item(i).style.borderBottomLeftRadius = "";
+        elems.item(i).style.borderBottomRightRadius = "";
+      }
+    }
+    else {
+      for (var i = 0; i < elems.length; i++) {
+        elems.item(i).style.borderBottomLeftRadius = "10px";
+        elems.item(i).style.borderBottomRightRadius = "10px";
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>

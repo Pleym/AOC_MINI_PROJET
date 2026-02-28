@@ -1,0 +1,23 @@
+[1;31m==>[0m Error: Spec 'maqao@2025.1.4 %aocc' matches no installed packages.
+[1;31m==>[0m Error: maqao matches multiple packages.
+  Matching packages:
+    [0;90mjlcreyq[0m maqao[0;36m@2.21.1[0m[0;35m arch=linux-rhel9-zen4[0m [0;32m%gcc[0m[0;32m@11.4.1[0m
+    [0;90me4pd4v7[0m maqao[0;36m@2025.1.4[0m[0;35m arch=linux-rhel9-zen4[0m nonenone
+  Use a more specific spec (e.g., prepend '/' to the hash).
+
+* [MAQAO] Warning: (host romeo-c040, process 3804110) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804129) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804130) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804131) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804112) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804114) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804116) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804117) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804119) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804120) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804121) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804122) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804124) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804126) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804127) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).
+* [MAQAO] Warning: (host romeo-c040, process 3804128) Excluded 2 thread(s) above maximum-threads-per-process/tpp=1. Rerun with --allow-extra-threads to include them (expect application slowdown if many of them).

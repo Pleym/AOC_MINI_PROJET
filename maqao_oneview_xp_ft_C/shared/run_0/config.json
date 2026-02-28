@@ -2,10 +2,10 @@
   "config" : {
     "experiment_name" : "",
     "comments" : "",
-    "executable"     : "bin/ft.C.x",
+    "executable"     : "./bin/ft.C.x",
     "external_libraries" : [],
     "custom_categories" : [],
-    "run_command"    : "<executable>  mpirun -np 16 ./bin/ft.C.x",
+    "run_command"    : "<executable> ",
     "_scripts"    : {
        "command"    : "sbatch <myscript>",
        "files"     : [
@@ -19,7 +19,7 @@
     "number_nodes" : 1,
     "number_processes_per_node" : 1,
     "number_threads_per_process" : null,
-    "mpi_command"    : "",
+    "mpi_command"    : "mpirun -np 16",
     "pinning_command"    : "",
     "throughput_core"    : -1,
     "throughput_max_core"    : 0,

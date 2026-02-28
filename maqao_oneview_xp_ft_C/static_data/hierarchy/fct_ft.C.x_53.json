@@ -1,0 +1,25 @@
+{
+  "__fct":
+    {
+      "loops":
+        {
+          "_147":
+            {
+              "src_regions":
+                [
+                  {
+                    "path": "/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/common/randi8.f90",
+                    "regions":
+                      [
+                        [
+                        60,
+                        62
+                        ]
+                      ]
+                  }
+                ],
+              "src": "randi8.f90:60-62"
+            }
+        }
+    }
+}

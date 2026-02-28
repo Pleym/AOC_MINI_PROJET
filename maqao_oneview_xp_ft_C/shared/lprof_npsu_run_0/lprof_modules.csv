@@ -1,0 +1,13 @@
+name;time_p;time_s;cpi_ratio;
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/maqao_oneview_xp_ft_C/binaries/ft.C.x;79.88835144043;9.9061651229858;;
+/usr/lib64/libc.so.6;16.813140869141;2.0848314762115;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_btl_vader.so;2.2705445289612;0.2815477848053;;
+/usr/lib64/libm.so.6;0.65161335468292;0.080800130963326;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/libopen-pal.so.40.30.4;0.23235826194286;0.028812451288104;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_coll_libnbc.so;0.055563934147358;0.0068899341858923;;
+/usr/lib64/ld-linux-x86-64.so.2;0.037884499877691;0.0046976823359728;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/openmpi/mca_pml_ob1.so;0.017679432407022;0.0021922516170889;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/libmpi.so.40.30.7;0.015153800137341;0.0018790729809552;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/libpciaccess-0.17-f3l77foob4tmpf6irjrbs53f6f34nh3j/lib/libpciaccess.so.0.11.1;0.010102532804012;0.0012527152430266;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/hwloc-2.11.1-zszwj6mlegoufyo3sndyfgilnr736i2o/lib/libhwloc.so.15.8.0;0.0050512664020061;0.00062635762151331;;
+/gpfs/app/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib/libopen-rte.so.40.30.4;0.0025256332010031;0.00031317881075665;;

@@ -1,0 +1,29 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 1080 - 1137
+--------------------------------------------------------------------------------
+
+1080:       subroutine cfftz (is, m, n, x, y)
+[...]
+1105:       mx = u(1)
+1106:       if ((is .ne. 1 .and. is .ne. -1) .or. m .lt. 1 .or. m .gt. mx)    &
+1107:      &  then
+1108:         write (*, 1)  is, m, mx
+1109:  1      format ('CFFTZ: Either U has not been initialized, or else'/    &
+1110:      &    'one of the input parameters is invalid', 3I5)
+1111:         stop
+[...]
+1117:       do l = 1, m, 2
+1118:         call fftz2 (is, l, m, n, fftblock, fftblockpad, u, x, y)
+1119:         if (l .eq. m) goto 160
+1120:         call fftz2 (is, l + 1, m, n, fftblock, fftblockpad, u, y, x)
+1121:       enddo
+[...]
+1128:  160  do j = 1, n
+1129:         do i = 1, fftblock
+1130:           x(i,j) = y(i,j)
+1131:         enddo
+1132:       enddo
+1133: 
+1134:  180  continue
+1135: 
+1136:       return
+1137:       end

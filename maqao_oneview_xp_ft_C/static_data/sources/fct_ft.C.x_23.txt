@@ -1,0 +1,41 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 1277 - 1342
+--------------------------------------------------------------------------------
+
+1277:       subroutine transpose2_local(n1, n2, xin, xout)
+[...]
+1294:       if (timers_enabled) call timer_start(T_transxzloc)
+[...]
+1303:       if (n1 .lt. transblock .or. n2 .lt. transblock) then
+1304:          if (n1 .ge. n2) then 
+1305:             do j = 1, n2
+1306:                do i = 1, n1
+1307:                   xout(j, i) = xin(i, j)
+1308:                end do
+1309:             end do
+1310:          else
+1311:             do i = 1, n1
+1312:                do j = 1, n2
+1313:                   xout(j, i) = xin(i, j)
+1314:                end do
+1315:             end do
+1316:          endif
+1317:       else
+1318:          do j = 0, n2-1, transblock
+[...]
+1326:                      z(jj,ii) = xin(i+ii, j+jj)
+1327:                   end do
+1328:                end do
+1329:                
+1330:                do ii = 1, transblock
+1331:                   do jj = 1, transblock
+1332:                      xout(j+jj, i+ii) = z(jj,ii)
+1333:                   end do
+1334:                end do
+1335:                
+1336:             end do
+1337:          end do
+1338:       endif
+1339:       if (timers_enabled) call timer_stop(T_transxzloc)
+1340: 
+1341:       return
+1342:       end

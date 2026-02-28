@@ -1,0 +1,162 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} % ok si votre LaTeX n'est pas en UTF-8 natif
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+
+\title{AOC}
+\author{doriandrivet}
+\date{February 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{NAS Parallel Benchmarks (NPB) : contexte et objectifs}
+
+Les \emph{NAS Parallel Benchmarks} (NPB) sont une suite standardisée de benchmarks développée à partir de 1991 au \emph{NASA Ames Research Center}, dans le cadre du programme \emph{Numerical Aerodynamic Simulation} (NAS), afin d'évaluer les performances des supercalculateurs et des architectures fortement parallèles \cite{Bailey1991NTRS,NAS_NPB_Web}.
+
+L'objectif des NPB est de mesurer, de manière reproductible, les capacités matérielles et logicielles d'une machine en reproduisant des comportements représentatifs de grandes applications scientifiques, en particulier la mécanique des fluides numérique (\emph{Computational Fluid Dynamics}, CFD). Les benchmarks ont été conçus comme un compromis entre deux approches alors insatisfaisantes : d'une part des tests trop simples qui n'exercent pas suffisamment la hiérarchie mémoire, d'autre part le portage complet d'applications scientifiques réalistes, coûteux et difficile à maintenir. Les NPB proposent une voie intermédiaire avec des noyaux et des pseudo-applications qui imitent à la fois l'intensité de calcul et les mouvements de données observés dans la CFD, tout en restant suffisamment compacts et portables \cite{BaileyNPBpdf}.
+
+Un aspect central de NPB est sa spécification dite \emph{pencil-and-paper}, où les problèmes sont définis de façon algorithmique plutôt que par une unique implémentation, ce qui limite les biais liés à une organisation logicielle particulière. La première version regroupe notamment cinq \emph{kernels} et trois \emph{pseudo-applications}, et elle est déclinée en plusieurs classes de taille (A, B, C, etc.) afin d'ajuster la charge de calcul et la consommation mémoire tout en conservant un cadre de comparaison standardisé \cite{Bailey1991NTRS,NAS_Problem_Sizes}.
+
+\section{Benchmark FT (Fast Fourier Transform)}
+
+Le noyau FT (\emph{Fast Fourier Transform}) fait partie des noyaux historiques des \emph{NAS Parallel Benchmarks}. Il modélise la résolution d'une équation aux dérivées partielles en trois dimensions via une approche spectrale fondée sur des FFT 3D, et a été conçu pour représenter un motif de calcul central en simulation numérique haute performance. \cite{BaileyNPBpdf,Bailey1991NTRS}
+
+D'un point de vue algorithmique, une FFT 3D est classiquement obtenue par une succession de FFT 1D appliquées selon chacun des trois axes du domaine. Entre ces phases de calcul, le code effectue des réorganisations de données (souvent assimilables à des transpositions) afin d'aligner la dimension traitée avec un parcours mémoire efficace. Cette alternance entre calcul (FFT) et mouvements de données (réordonnancement en mémoire) explique l'intérêt de FT pour l'analyse de performance : selon la taille du problème et le niveau de parallélisme, l'exécution peut être limitée soit par le calcul, soit par la bande passante mémoire et la localité. \cite{BaileyNPBpdf}
+
+Dans ce projet, FT constitue donc un cas d'étude pertinent pour comparer les comportements séquentiels et OpenMP et interpréter les limites de scalabilité observées au travers des métriques MAQAO. \cite{NAS_NPB_Web}
+
+\section{Analyse MAQAO OneView du job FT (CLASS=C)}
+
+Cette analyse repose sur l'expérience OneView localisée dans \texttt{maqao\_oneview\_xp\_ft\_C}. Le profilage est exploitable (\texttt{profiled\_time}=12.40 s, \texttt{application\_time}=12.91 s), avec une activité CPU élevée (96.80\%) et une bonne stabilité d'affinité (97.88\%). La couverture des boucles est élevée (79.80\% du temps applicatif, dont 74.49\% dans des boucles internes), ce qui confirme que les optimisations locales sur les noyaux de calcul sont pertinentes.
+
+\subsection{Constats principaux}
+
+\begin{itemize}
+	\item Le profil est dominé par quelques boucles de \texttt{ft.f90}, avec deux hotspots majeurs: \texttt{Loop 71} (16.91\%, fonction \texttt{fftz2}, lignes 1184--1188) et \texttt{Loop 4} (16.62\%, fonction \texttt{ft}, lignes 207--208).
+	\item Plusieurs boucles de transposition représentent une part importante du temps: \texttt{Loop 82} (11.92\%, \texttt{transpose\_x\_yz}) et \texttt{Loop 91} (7.80\%, \texttt{transpose2\_local}).
+	\item La vectorisation est globalement active (souvent 80--100\%), mais l'utilisation de longueur vectorielle reste modérée ($\approx$ 22--25\%), et MAQAO signale des coûts liés aux accès non unitaires/permutes ainsi qu'aux chemins multiples.
+	\item Le potentiel d'accélération estimé reste significatif: \texttt{speedup\_if\_fully\_vectorised}=2.1496 (borne optimiste).
+\end{itemize}
+
+\subsection{Lecture par zones de code}
+
+\paragraph{1) Noyau FFT Stockham (\texttt{fftz2})}
+Le cœur de calcul est la double boucle sur \texttt{k} et \texttt{j} (lignes 1184--1188), où sont effectuées les opérations complexes de type papillon. C'est le principal contributeur au temps total. Les recommandations MAQAO portent surtout sur:
+\begin{itemize}
+	\item une meilleure exposition des opportunités FMA,
+	\item la réduction des coûts de \emph{peel/tail} et des instructions de permutation.
+\end{itemize}
+
+\paragraph{2) Étapes de copie/organisation de données (\texttt{cffts1}/\texttt{cffts2})}
+Les portions de code autour des lignes 916--917 et 963--963 montrent des schémas de copie bloc par bloc entre tableaux temporaires. Ces phases sont correctement vectorisées, mais restent sensibles à la localité mémoire et à l'alignement.
+
+\paragraph{3) Transpositions locales/globales (\texttt{transpose2\_local}, \texttt{transpose\_x\_yz})}
+Les boucles des lignes 1326--1334 et 1396 sont fortement présentes dans le profil. La logique en blocs améliore déjà le cache, mais la nature des accès (strides non unitaires selon les axes) continue de générer des coûts de réordonnancement.
+
+\subsection{Plan d'optimisation cohérent}
+
+\begin{enumerate}
+	\item \textbf{Consolider la compilation d'analyse:} conserver \texttt{-g -fno-omit-frame-pointer} pour les campagnes MAQAO afin d'améliorer la lisibilité des informations de compilation.
+	\item \textbf{Traiter les hotspots en priorité:} cibler d'abord \texttt{Loop 71} puis \texttt{Loop 4} (à eux deux $\approx$ 33.5\% du temps).
+	\item \textbf{Réduire les coûts de contrôle et de permutation:} simplifier les chemins conditionnels dans les boucles critiques et favoriser les accès stride-1 lorsque possible.
+	\item \textbf{Comparer les variantes de compilation:} baseline $\rightarrow$ flags agressifs $\rightarrow$ variante compilateur, avec un OneView par étape (méthodologie déjà mise en place).
+\end{enumerate}
+
+\subsection{Campagne d'optimisation progressive (FT, CLASS=C)}
+
+Pour rester dans un cadre réaliste de niveau Master CHPS, l'optimisation est conduite en \textbf{étapes incrémentales}, en ne modifiant qu'un petit nombre de paramètres à la fois. L'objectif est de conserver un raisonnement causal: si la performance change, il est possible d'identifier la cause probable.
+
+\paragraph{Principe expérimental}
+Chaque étape produit un exécutable FT et un rapport OneView dédié (un dossier \texttt{maqao\_oneview\_xp\_ft\_C\_<etape>}). Les métriques clés sont ensuite consolidées dans un fichier \texttt{ft\_C\_campaign\_summary.csv} pour comparaison inter-étapes.
+
+\paragraph{Étapes retenues et intérêt}
+\begin{enumerate}
+	\item \textbf{baseline} : \texttt{-O2 -g -fno-omit-frame-pointer}. Référence stable pour profiler proprement (lisibilité MAQAO et coût de base).
+	\item \textbf{o3\_native} : \texttt{-O3 -march=native -funroll-loops}. Test d'un niveau d'optimisation plus agressif avec spécialisation micro-architecture.
+	\item \textbf{ofast\_native} : \texttt{-Ofast -ffast-math -march=native}. Recherche de gain maximal calcul, au prix potentiel d'une sémantique flottante plus permissive.
+	\item \textbf{lto\_native} : ajout de \texttt{-flto}. Vérifie si l'optimisation inter-modules améliore les chemins chauds.
+	\item \textbf{compiler\_variant\_mpifort} : remplacement du wrapper \texttt{mpif90} par \texttt{mpifort}. Permet d'observer l'impact de la chaîne compilateur MPI sur le code généré.
+\end{enumerate}
+
+\paragraph{Pourquoi cette chronologie est logique}
+La séquence va du plus conservateur au plus agressif:
+\begin{itemize}
+	\item d'abord établir une ligne de base fiable,
+	\item ensuite augmenter l'optimisation locale (\texttt{O3}, déroulage, architecture),
+	\item puis tester des hypothèses plus risquées (\texttt{Ofast}/\texttt{fast-math}),
+	\item enfin comparer l'effet de la chaîne compilateur sans changer l'algorithme.
+\end{itemize}
+
+\paragraph{Critères de décision (garder/rejeter une optimisation)}
+Une étape est conservée si elle améliore durablement le compromis suivant:
+\begin{enumerate}
+	\item temps d'application (prioritaire),
+	\item métriques MAQAO de potentiel restant (ex. \texttt{speedup\_if\_fully\_vectorised}),
+	\item stabilité et interprétabilité des résultats (absence de régression évidente).
+\end{enumerate}
+
+\paragraph{Lecture attendue des résultats}
+Si une étape réduit le temps mais n'améliore pas les hotspots structurants (\texttt{fftz2}, transpositions), le gain est probablement conjoncturel. À l'inverse, une baisse de couverture des boucles critiques ou de meilleurs indicateurs de vectorisation est un signal plus robuste de progrès.
+
+\subsection{Tableau de synthèse de campagne (à compléter)}
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Étape & App. time (s) & speedup\_if\_fully\_vectorised & speedup\_if\_fp\_vect & Statut \\
+\hline
+baseline & 12.91 & 2.1496 & 1.1961 & OK \\
+o3\_native & à compléter & à compléter & à compléter & à compléter \\
+ofast\_native & à compléter & à compléter & à compléter & à compléter \\
+lto\_native & à compléter & à compléter & à compléter & à compléter \\
+compiler\_variant\_mpifort & à compléter & à compléter & à compléter & à compléter \\
+\hline
+\end{tabular}
+\end{center}
+
+Ce tableau est alimenté à partir de \texttt{ft\_C\_campaign\_summary.csv} généré automatiquement par le script de campagne.
+
+\subsection{Captures MAQAO à insérer}
+
+Les captures suivantes sont recommandées pour documenter le rapport. Le code ci-dessous compile même si les images ne sont pas encore présentes.
+
+\begin{figure}[h]
+	\centering
+	\IfFileExists{figures/maqao_ft_overview.png}{%
+		\includegraphics[width=0.95\linewidth]{figures/maqao_ft_overview.png}%
+	}{%
+		\fbox{\parbox{0.9\linewidth}{\centering Capture MAQAO \#1 à ajouter\\Vue d'ensemble OneView (Summary / Global metrics).}}%
+	}
+	\caption{Vue d'ensemble OneView du benchmark FT classe C.}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\IfFileExists{figures/maqao_ft_hotspots.png}{%
+		\includegraphics[width=0.95\linewidth]{figures/maqao_ft_hotspots.png}%
+	}{%
+		\fbox{\parbox{0.9\linewidth}{\centering Capture MAQAO \#2 à ajouter\\Hotspots fonctions/boucles (Loop 71, Loop 4, transpose).}}%
+	}
+	\caption{Hotspots et répartition du temps d'exécution.}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\IfFileExists{figures/maqao_ft_vectorization.png}{%
+		\includegraphics[width=0.95\linewidth]{figures/maqao_ft_vectorization.png}%
+	}{%
+		\fbox{\parbox{0.9\linewidth}{\centering Capture MAQAO \#3 à ajouter\\Détails vectorisation et recommandations CQA.}}%
+	}
+	\caption{Indicateurs de vectorisation et pistes d'optimisation.}
+\end{figure}
+
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
