@@ -19,10 +19,8 @@ CPUS_PER_TASK="${CPUS_PER_TASK:-1}"
 BENCHMARK="ft"
 CLASS="C"
 
-# Meilleure config observée jusqu'ici (baseline O2 avec symboles pour MAQAO)
-BEST_LABEL="best_o2_profiled"
-BEST_FFLAGS="${BEST_FFLAGS:--O2 -g -fno-omit-frame-pointer}"
-BEST_CFLAGS="${BEST_CFLAGS:--O2 -g -fno-omit-frame-pointer}"
+# Profils de flags à comparer (un OneView par profil)
+FLAG_PROFILES="${FLAG_PROFILES:-best_o2_profiled,o3_native,ofast_native,lto_native}"
 
 # Essai d'au moins deux wrappers compilateur MPI
 COMPILERS="${COMPILERS:-mpif90,mpifort}"
@@ -86,18 +84,56 @@ set_make_def_param() {
 	sed -i -E "s|^${key}[[:space:]]*=.*$|${key} = ${value}|" config/make.def
 }
 
+resolve_flags_profile() {
+	local flag_profile="$1"
+	case "${flag_profile}" in
+		best_o2_profiled)
+			PROFILE_FFLAGS="-O2 -g -fno-omit-frame-pointer"
+			PROFILE_CFLAGS="-O2 -g -fno-omit-frame-pointer"
+			PROFILE_FLINKFLAGS='$(FFLAGS)'
+			PROFILE_CLINKFLAGS='$(CFLAGS)'
+			;;
+		o3_native)
+			PROFILE_FFLAGS="-O3 -march=native -funroll-loops -g -fno-omit-frame-pointer"
+			PROFILE_CFLAGS="-O3 -march=native -funroll-loops -g -fno-omit-frame-pointer"
+			PROFILE_FLINKFLAGS='$(FFLAGS)'
+			PROFILE_CLINKFLAGS='$(CFLAGS)'
+			;;
+		ofast_native)
+			PROFILE_FFLAGS="-Ofast -ffast-math -march=native -funroll-loops -g -fno-omit-frame-pointer"
+			PROFILE_CFLAGS="-Ofast -ffast-math -march=native -funroll-loops -g -fno-omit-frame-pointer"
+			PROFILE_FLINKFLAGS='$(FFLAGS)'
+			PROFILE_CLINKFLAGS='$(CFLAGS)'
+			;;
+		lto_native)
+			PROFILE_FFLAGS="-O3 -march=native -funroll-loops -flto -g -fno-omit-frame-pointer"
+			PROFILE_CFLAGS="-O3 -march=native -funroll-loops -flto -g -fno-omit-frame-pointer"
+			PROFILE_FLINKFLAGS='$(FFLAGS) -flto'
+			PROFILE_CLINKFLAGS='$(CFLAGS) -flto'
+			;;
+		*)
+			echo "Profil de flags inconnu: ${flag_profile}" >&2
+			return 1
+			;;
+	esac
+	return 0
+}
+
 configure_make_def_for_compiler() {
 	local compiler="$1"
+	local flag_profile="$2"
+
+	resolve_flags_profile "${flag_profile}"
 	cp config/make.def.template config/make.def
 
 	set_make_def_param MPIFC "${compiler}"
 	set_make_def_param FLINK '$(MPIFC)'
 	set_make_def_param MPICC "mpicc"
 	set_make_def_param CLINK '$(MPICC)'
-	set_make_def_param FFLAGS "${BEST_FFLAGS}"
-	set_make_def_param CFLAGS "${BEST_CFLAGS}"
-	set_make_def_param FLINKFLAGS '$(FFLAGS)'
-	set_make_def_param CLINKFLAGS '$(CFLAGS)'
+	set_make_def_param FFLAGS "${PROFILE_FFLAGS}"
+	set_make_def_param CFLAGS "${PROFILE_CFLAGS}"
+	set_make_def_param FLINKFLAGS "${PROFILE_FLINKFLAGS}"
+	set_make_def_param CLINKFLAGS "${PROFILE_CLINKFLAGS}"
 }
 
 resolve_mpi_launcher() {
@@ -156,12 +192,13 @@ init_summary_csv() {
 }
 
 append_summary_csv() {
-	local compiler="$1"
-	local profile="$2"
-	local mode="$3"
-	local nprocs="$4"
-	local status="$5"
-	local xp_dir="$6"
+	local label="$1"
+	local compiler="$2"
+	local profile="$3"
+	local mode="$4"
+	local nprocs="$5"
+	local status="$6"
+	local xp_dir="$7"
 	local metrics_file="${xp_dir}/shared/run_0/global_metrics.csv"
 
 	local profiled_time="NA"
@@ -184,44 +221,46 @@ append_summary_csv() {
 		compilation_options="$(extract_metric "${metrics_file}" "compilation_options")"
 	fi
 
-	echo "${BEST_LABEL},${compiler},${profile},${mode},${nprocs},${status},${profiled_time},${application_time},${user_time},${loops_time},${speedup_fully_vect},${speedup_fp_vect},${array_access_efficiency},${compilation_options},${xp_dir}" >> "${SUMMARY_CSV}"
+	echo "${label},${compiler},${profile},${mode},${nprocs},${status},${profiled_time},${application_time},${user_time},${loops_time},${speedup_fully_vect},${speedup_fp_vect},${array_access_efficiency},${compilation_options},${xp_dir}" >> "${SUMMARY_CSV}"
 }
 
 append_runtime_csv() {
-	local compiler="$1"
-	local profile="$2"
-	local nprocs="$3"
-	local status="$4"
-	local elapsed="$5"
-	local max_rss="$6"
-	local out_log="$7"
-	local err_log="$8"
+	local label="$1"
+	local compiler="$2"
+	local profile="$3"
+	local nprocs="$4"
+	local status="$5"
+	local elapsed="$6"
+	local max_rss="$7"
+	local out_log="$8"
+	local err_log="$9"
 
-	echo "${BEST_LABEL},${compiler},${profile},${nprocs},${status},\"${elapsed}\",${max_rss},${out_log},${err_log}" >> "${RUNTIME_CSV}"
+	echo "${label},${compiler},${profile},${nprocs},${status},\"${elapsed}\",${max_rss},${out_log},${err_log}" >> "${RUNTIME_CSV}"
 }
 
 run_plain_timing() {
-	local compiler="$1"
-	local profile="$2"
-	local nprocs="$3"
-	local exe="$4"
+	local label="$1"
+	local compiler="$2"
+	local profile="$3"
+	local nprocs="$4"
+	local exe="$5"
 
 	local launcher
 	launcher="$(resolve_mpi_launcher "${nprocs}")"
 	if [[ -z "${launcher}" ]]; then
-		append_runtime_csv "${compiler}" "${profile}" "${nprocs}" "FAIL" "NA" "NA" "NA" "NA"
+		append_runtime_csv "${label}" "${compiler}" "${profile}" "${nprocs}" "FAIL" "NA" "NA" "NA" "NA"
 		return 1
 	fi
 
-	local out_log="${RUNTIME_DIR}/run_${BEST_LABEL}_${compiler}_${profile}.out"
-	local err_log="${RUNTIME_DIR}/run_${BEST_LABEL}_${compiler}_${profile}.err"
+	local out_log="${RUNTIME_DIR}/run_${label}_${compiler}_${profile}.out"
+	local err_log="${RUNTIME_DIR}/run_${label}_${compiler}_${profile}.err"
 
 	if /usr/bin/time -v bash -lc "${launcher} ${exe}" >"${out_log}" 2>"${err_log}"; then
 		local elapsed
 		local max_rss
 		elapsed=$(awk -F': ' '/Elapsed \(wall clock\) time/ {print $2; exit}' "${err_log}")
 		max_rss=$(awk -F': ' '/Maximum resident set size/ {print $2; exit}' "${err_log}")
-		append_runtime_csv "${compiler}" "${profile}" "${nprocs}" "OK" "${elapsed:-NA}" "${max_rss:-NA}" "${out_log}" "${err_log}"
+		append_runtime_csv "${label}" "${compiler}" "${profile}" "${nprocs}" "OK" "${elapsed:-NA}" "${max_rss:-NA}" "${out_log}" "${err_log}"
 		return 0
 	fi
 
@@ -229,40 +268,41 @@ run_plain_timing() {
 	local max_rss
 	elapsed=$(awk -F': ' '/Elapsed \(wall clock\) time/ {print $2; exit}' "${err_log}")
 	max_rss=$(awk -F': ' '/Maximum resident set size/ {print $2; exit}' "${err_log}")
-	append_runtime_csv "${compiler}" "${profile}" "${nprocs}" "FAIL" "${elapsed:-NA}" "${max_rss:-NA}" "${out_log}" "${err_log}"
+	append_runtime_csv "${label}" "${compiler}" "${profile}" "${nprocs}" "FAIL" "${elapsed:-NA}" "${max_rss:-NA}" "${out_log}" "${err_log}"
 	return 1
 }
 
 run_oneview() {
-	local compiler="$1"
-	local profile="$2"
-	local mode="$3"
-	local nprocs="$4"
-	local exe="$5"
+	local label="$1"
+	local compiler="$2"
+	local profile="$3"
+	local mode="$4"
+	local nprocs="$5"
+	local exe="$6"
 
 	local launcher
 	launcher="$(resolve_mpi_launcher "${nprocs}")"
 	if [[ -z "${launcher}" ]]; then
-		append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "NA"
+		append_summary_csv "${label}" "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "NA"
 		return 1
 	fi
 
 	local mode_args
 	mode_args="$(maqao_mode_args "${mode}")"
 	if [[ -z "${mode_args}" ]]; then
-		append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "NA"
+		append_summary_csv "${label}" "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "NA"
 		return 1
 	fi
 
-	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${BEST_LABEL}_${compiler}_${profile}_${mode}"
+	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${label}_${compiler}_${profile}_${mode}"
 	rm -rf "${xp}"
 
 	if maqao oneview ${mode_args} xp="${xp}" --mpi-command="${launcher}" -- "${exe}"; then
-		append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "OK" "${ROOT_DIR}/${xp}"
+		append_summary_csv "${label}" "${compiler}" "${profile}" "${mode}" "${nprocs}" "OK" "${ROOT_DIR}/${xp}"
 		return 0
 	fi
 
-	append_summary_csv "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "${ROOT_DIR}/${xp}"
+	append_summary_csv "${label}" "${compiler}" "${profile}" "${mode}" "${nprocs}" "FAIL" "${ROOT_DIR}/${xp}"
 	return 1
 }
 
@@ -273,47 +313,54 @@ run_campaign() {
 	init_summary_csv
 
 	local failed=0
+	IFS=',' read -r -a flag_array <<< "${FLAG_PROFILES}"
 	IFS=',' read -r -a compiler_array <<< "${COMPILERS}"
 	IFS=',' read -r -a profile_array <<< "${PROFILES}"
 	IFS=',' read -r -a mode_array <<< "${MAQAO_MODES}"
 
-	for compiler in "${compiler_array[@]}"; do
-		if ! command -v "${compiler}" >/dev/null 2>&1; then
-			echo "Compilateur indisponible: ${compiler} (skip)"
-			continue
-		fi
-
-		echo "=== Compilation ${BENCHMARK}.${CLASS} avec ${compiler} (${BEST_LABEL}) ==="
-		configure_make_def_for_compiler "${compiler}"
-		make clean
-		mkdir -p bin
-		if ! make "${BENCHMARK}" "CLASS=${CLASS}" F08=def; then
-			echo "Echec compilation avec ${compiler}" >&2
-			failed=$((failed + 1))
-			continue
-		fi
-
-		local exe="./bin/${BENCHMARK}.${CLASS}.x"
-		if [[ ! -x "${exe}" ]]; then
-			echo "Binaire introuvable après compilation ${compiler}: ${exe}" >&2
-			failed=$((failed + 1))
-			continue
-		fi
-
-		for profile in "${profile_array[@]}"; do
-			local nprocs="${PAR_NTASKS}"
-			if [[ "${profile}" == "seq" ]]; then
-				nprocs="${SEQ_NTASKS}"
+	for flag_profile in "${flag_array[@]}"; do
+		for compiler in "${compiler_array[@]}"; do
+			if ! command -v "${compiler}" >/dev/null 2>&1; then
+				echo "Compilateur indisponible: ${compiler} (skip)"
+				continue
 			fi
 
-			if ! run_plain_timing "${compiler}" "${profile}" "${nprocs}" "${exe}"; then
+			echo "=== Compilation ${BENCHMARK}.${CLASS} avec ${compiler} (${flag_profile}) ==="
+			if ! configure_make_def_for_compiler "${compiler}" "${flag_profile}"; then
 				failed=$((failed + 1))
+				continue
 			fi
 
-			for mode in "${mode_array[@]}"; do
-				if ! run_oneview "${compiler}" "${profile}" "${mode}" "${nprocs}" "${exe}"; then
+			make clean
+			mkdir -p bin
+			if ! make "${BENCHMARK}" "CLASS=${CLASS}" F08=def; then
+				echo "Echec compilation avec ${compiler} (${flag_profile})" >&2
+				failed=$((failed + 1))
+				continue
+			fi
+
+			local exe="./bin/${BENCHMARK}.${CLASS}.x"
+			if [[ ! -x "${exe}" ]]; then
+				echo "Binaire introuvable après compilation ${compiler}/${flag_profile}: ${exe}" >&2
+				failed=$((failed + 1))
+				continue
+			fi
+
+			for profile in "${profile_array[@]}"; do
+				local nprocs="${PAR_NTASKS}"
+				if [[ "${profile}" == "seq" ]]; then
+					nprocs="${SEQ_NTASKS}"
+				fi
+
+				if ! run_plain_timing "${flag_profile}" "${compiler}" "${profile}" "${nprocs}" "${exe}"; then
 					failed=$((failed + 1))
 				fi
+
+				for mode in "${mode_array[@]}"; do
+					if ! run_oneview "${flag_profile}" "${compiler}" "${profile}" "${mode}" "${nprocs}" "${exe}"; then
+						failed=$((failed + 1))
+					fi
+				done
 			done
 		done
 	done
@@ -332,9 +379,9 @@ submit_campaign() {
 	ensure_project_layout
 	unset SBATCH_DEPENDENCY || true
 
-	local job_name="npb_${BENCHMARK}_${CLASS}_${BEST_LABEL}"
-	local output_file="${BENCHMARK}_${CLASS}_${BEST_LABEL}.%j.out"
-	local error_file="${BENCHMARK}_${CLASS}_${BEST_LABEL}.%j.err"
+	local job_name="npb_${BENCHMARK}_${CLASS}_flags_campaign"
+	local output_file="${BENCHMARK}_${CLASS}_flags_campaign.%j.out"
+	local error_file="${BENCHMARK}_${CLASS}_flags_campaign.%j.err"
 
 	local -a sbatch_cmd
 	sbatch_cmd=(sbatch --parsable
