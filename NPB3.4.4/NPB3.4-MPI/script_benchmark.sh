@@ -5,6 +5,7 @@ set -euo pipefail
 # Campagne MAQAO OneView NPB-MPI (FT uniquement, CLASS=C)
 # - Exécution chronologique des étapes d'optimisation
 # - Un rapport OneView par étape
+# - Une seule soumission Slurm pour éviter les soucis de dépendances
 # ------------------------------------------------------------
 
 ACCOUNT="${ACCOUNT:-r250142}"
@@ -136,49 +137,47 @@ run_stage() {
 	maqao oneview -R1 xp="${xp}" --mpi-command="${launcher}" -- "${exe}"
 }
 
+run_all_stages() {
+	local nprocs="$1"
+	IFS=',' read -r -a stage_array <<< "${STAGES}"
+
+	for stage in "${stage_array[@]}"; do
+		echo "=== Stage: ${stage} (FT CLASS=C) ==="
+		run_stage "${stage}" "${nprocs}"
+	done
+}
+
 submit_campaign() {
 	cd "${ROOT_DIR}"
 
-	IFS=',' read -r -a stage_array <<< "${STAGES}"
-	local previous_job=""
+	unset SBATCH_DEPENDENCY || true
 
-	for stage in "${stage_array[@]}"; do
-		local job_name="npb_${BENCHMARK}_${CLASS}_${stage}"
-		local output_file="${BENCHMARK}_${CLASS}_${stage}.%j.out"
-		local error_file="${BENCHMARK}_${CLASS}_${stage}.%j.err"
+	local job_name="npb_${BENCHMARK}_${CLASS}_campaign"
+	local output_file="${BENCHMARK}_${CLASS}_campaign.%j.out"
+	local error_file="${BENCHMARK}_${CLASS}_campaign.%j.err"
 
-		local -a cmd
-		cmd=(sbatch --parsable
-			--account="${ACCOUNT}"
-			--time="${WALLTIME}"
-			--mem="${MEM}"
-			--nodes="${NODES}"
-			--constraint="${CONSTRAINT}"
-			--ntasks="${NTASKS}"
-			--cpus-per-task="${CPUS_PER_TASK}"
-			--job-name="${job_name}"
-			--output="${output_file}"
-			--error="${error_file}"
-			--export=ALL,RUN_STAGE=1,STAGE="${stage}",NTASKS_REQ="${NTASKS}"
-		)
+	local job_id
+	job_id=$(sbatch --parsable \
+		--account="${ACCOUNT}" \
+		--time="${WALLTIME}" \
+		--mem="${MEM}" \
+		--nodes="${NODES}" \
+		--constraint="${CONSTRAINT}" \
+		--ntasks="${NTASKS}" \
+		--cpus-per-task="${CPUS_PER_TASK}" \
+		--job-name="${job_name}" \
+		--output="${output_file}" \
+		--error="${error_file}" \
+		--export=ALL,RUN_ALL_STAGES=1,STAGES="${STAGES}",NTASKS_REQ="${NTASKS}" \
+		"${SCRIPT_PATH}")
 
-		if [[ -n "${previous_job}" ]]; then
-			cmd+=(--dependency="afterok:${previous_job}")
-		fi
-
-		cmd+=("${SCRIPT_PATH}")
-
-		local job_id
-		job_id=$("${cmd[@]}")
-		echo "Soumis ${job_name} -> job ${job_id}"
-
-		previous_job="${job_id}"
-	done
-
+	echo "Soumis ${job_name} -> job ${job_id}"
 	echo "Campagne soumise."
 }
 
-if [[ "${RUN_STAGE:-0}" == "1" ]]; then
+if [[ "${RUN_ALL_STAGES:-0}" == "1" ]]; then
+	run_all_stages "${NTASKS_REQ:-${SLURM_NTASKS:-${NTASKS}}}"
+elif [[ "${RUN_STAGE:-0}" == "1" ]]; then
 	run_stage "${STAGE}" "${NTASKS_REQ:-${SLURM_NTASKS:-${NTASKS}}}"
 else
 	submit_campaign
