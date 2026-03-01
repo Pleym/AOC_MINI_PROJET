@@ -36,7 +36,8 @@ COMPILERS="${COMPILERS:-mpif90}"
 #   OPENMPI_HASH=5xjwtin  (openmpi@4.1.7 %aocc)
 #   OPENMPI_SPEC="openmpi@4.1.7%gcc"
 OPENMPI_HASH="${OPENMPI_HASH:-}"
-OPENMPI_SPEC="${OPENMPI_SPEC:-openmpi@4.1.7}"
+OPENMPI_SPEC="${OPENMPI_SPEC:-}"
+OPENMPI_TOOLCHAIN="${OPENMPI_TOOLCHAIN:-gcc}"
 
 # Conseils prof: seq puis par + modes R1/S1/R1-WS
 PROFILES="${PROFILES:-seq,par}"
@@ -60,27 +61,63 @@ SUMMARY_CSV="${ROOT_DIR}/ft_C_campaign_summary.csv"
 RUNTIME_CSV="${ROOT_DIR}/ft_C_runtime_memory.csv"
 RUNTIME_DIR="${ROOT_DIR}/runtime_logs"
 
+resolve_openmpi_hash_auto() {
+	local hash=""
+
+	if [[ -n "${OPENMPI_SPEC}" ]]; then
+		hash=$(spack find --format '{hash:7}' "${OPENMPI_SPEC}" 2>/dev/null | awk 'NF{print $1; exit}')
+		if [[ -n "${hash}" ]]; then
+			echo "${hash}"
+			return 0
+		fi
+	fi
+
+	hash=$(spack find --format '{hash:7}' "openmpi@4.1.7%${OPENMPI_TOOLCHAIN}" 2>/dev/null | awk 'NF{print $1; exit}')
+	if [[ -n "${hash}" ]]; then
+		echo "${hash}"
+		return 0
+	fi
+
+	hash=$(spack find --format '{hash:7}' "openmpi@4.1.7" 2>/dev/null | awk 'NF{print $1; exit}')
+	if [[ -n "${hash}" ]]; then
+		echo "${hash}"
+		return 0
+	fi
+
+	hash=$(spack find --format '{hash:7}' "openmpi" 2>/dev/null | awk 'NF{print $1; exit}')
+	if [[ -n "${hash}" ]]; then
+		echo "${hash}"
+		return 0
+	fi
+
+	echo ""
+}
+
 load_tools() {
 	romeo_load_x64cpu_env
 
 	# Nettoie un éventuel OpenMPI déjà chargé pour éviter les mélanges de toolchains.
 	spack unload openmpi >/dev/null 2>&1 || true
 
-	# Ne pas forcer un compilateur MPI spécifique ici: sinon mpi.mod peut
-	# devenir incompatible avec le backend Fortran demandé (ex: gfortran).
+	# Charge OpenMPI par hash pour éviter toute ambiguïté de spec Spack.
 	if [[ -n "${OPENMPI_HASH}" ]]; then
 		if [[ "${OPENMPI_HASH}" == /* ]]; then
 			spack load "${OPENMPI_HASH}"
 		else
 			spack load "/${OPENMPI_HASH}"
 		fi
-	elif [[ -n "${OPENMPI_SPEC}" ]]; then
-		spack load "${OPENMPI_SPEC}" || spack load openmpi
 	else
-		spack load openmpi@4.1.7 || spack load openmpi
+		OPENMPI_HASH="$(resolve_openmpi_hash_auto)"
+		if [[ -z "${OPENMPI_HASH}" ]]; then
+			echo "Erreur: impossible de résoudre un hash OpenMPI (OPENMPI_SPEC='${OPENMPI_SPEC}', OPENMPI_TOOLCHAIN='${OPENMPI_TOOLCHAIN}')." >&2
+			echo "OpenMPI installés:" >&2
+			spack find openmpi >&2 || true
+			exit 1
+		fi
+		spack load "/${OPENMPI_HASH}"
 	fi
 
-	echo "OpenMPI chargé: hash='${OPENMPI_HASH:-auto}', spec='${OPENMPI_SPEC:-auto}'"
+	echo "OpenMPI chargé: hash='${OPENMPI_HASH}', spec='${OPENMPI_SPEC:-auto}', toolchain_pref='${OPENMPI_TOOLCHAIN}'"
 
 	local maqao_hash
 	maqao_hash=$(spack find --format '{name}@{version} /{hash:7}' maqao 2>/dev/null | awk '/^maqao@2025\.1\.4 / {print $2; exit}')
