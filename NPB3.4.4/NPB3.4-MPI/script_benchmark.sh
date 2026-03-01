@@ -255,7 +255,7 @@ check_mpi_backend_compatibility() {
 	local probe_src
 	local probe_obj
 	local probe_log
-	probe_src="$(mktemp "${ROOT_DIR}/.mpi_probe_XXXXXX.f90")"
+	probe_src="$(mktemp "${ROOT_DIR}/mpi_probe_XXXXXX.f90")"
 	probe_obj="${probe_src%.f90}.o"
 	probe_log="${probe_src%.f90}.log"
 	cat > "${probe_src}" << 'EOF'
