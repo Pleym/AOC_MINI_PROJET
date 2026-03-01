@@ -56,10 +56,10 @@ export PAR_NTASKS="${PAR_NTASKS:-${NTASKS}}"
 
 if [[ "${DIRECT:-0}" == "1" ]]; then
   echo "[INFO] Exécution directe (RUN_CAMPAIGN=1)"
-  RUN_CAMPAIGN=1 ./script_benchmark.sh
+  RUN_CAMPAIGN=1 bash ./script_benchmark.sh
 else
   echo "[INFO] Soumission Slurm via sbatch (par défaut)"
-  ./script_benchmark.sh
+  bash ./script_benchmark.sh
 fi
 
 cat <<'EOF'
