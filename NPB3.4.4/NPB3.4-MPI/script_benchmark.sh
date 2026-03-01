@@ -22,11 +22,21 @@ CLASS="C"
 # Profils de flags à comparer (un OneView par profil)
 FLAG_PROFILES="${FLAG_PROFILES:-best_o2_profiled,o3_native,ofast_native,lto_native}"
 
-# Essai de plusieurs backends compilateur Fortran.
-# Entrées acceptées:
+# Par défaut on garde un wrapper MPI unique pour éviter les conflits mpi.mod.
+# Pour comparaison GCC vs AOCC, changer l'OpenMPI chargé (hash/spec), pas ce wrapper.
+# Entrées acceptées pour COMPILERS:
 # - wrappers MPI directs: mpif90, mpifort
 # - backends Fortran: gfortran, flang, flang-new, ifort, ifx
-COMPILERS="${COMPILERS:-gfortran,flang-new}"
+COMPILERS="${COMPILERS:-mpif90}"
+
+# Sélection explicite de l'environnement MPI à charger via Spack.
+# Priorité: OPENMPI_HASH > OPENMPI_SPEC > fallback auto.
+# Exemples:
+#   OPENMPI_HASH=kfjcqqr  (openmpi@4.1.7 %gcc)
+#   OPENMPI_HASH=5xjwtin  (openmpi@4.1.7 %aocc)
+#   OPENMPI_SPEC="openmpi@4.1.7%gcc"
+OPENMPI_HASH="${OPENMPI_HASH:-}"
+OPENMPI_SPEC="${OPENMPI_SPEC:-openmpi@4.1.7}"
 
 # Conseils prof: seq puis par + modes R1/S1/R1-WS
 PROFILES="${PROFILES:-seq,par}"
@@ -53,7 +63,24 @@ RUNTIME_DIR="${ROOT_DIR}/runtime_logs"
 load_tools() {
 	romeo_load_x64cpu_env
 
-	spack load openmpi@4.1.7%aocc || spack load openmpi
+	# Nettoie un éventuel OpenMPI déjà chargé pour éviter les mélanges de toolchains.
+	spack unload openmpi >/dev/null 2>&1 || true
+
+	# Ne pas forcer un compilateur MPI spécifique ici: sinon mpi.mod peut
+	# devenir incompatible avec le backend Fortran demandé (ex: gfortran).
+	if [[ -n "${OPENMPI_HASH}" ]]; then
+		if [[ "${OPENMPI_HASH}" == /* ]]; then
+			spack load "${OPENMPI_HASH}"
+		else
+			spack load "/${OPENMPI_HASH}"
+		fi
+	elif [[ -n "${OPENMPI_SPEC}" ]]; then
+		spack load "${OPENMPI_SPEC}" || spack load openmpi
+	else
+		spack load openmpi@4.1.7 || spack load openmpi
+	fi
+
+	echo "OpenMPI chargé: hash='${OPENMPI_HASH:-auto}', spec='${OPENMPI_SPEC:-auto}'"
 
 	local maqao_hash
 	maqao_hash=$(spack find --format '{name}@{version} /{hash:7}' maqao 2>/dev/null | awk '/^maqao@2025\.1\.4 / {print $2; exit}')
@@ -181,6 +208,46 @@ resolve_compiler_target() {
 			return 1
 			;;
 	esac
+}
+
+check_mpi_backend_compatibility() {
+	local compiler_label="$1"
+	local mpi_fc_wrapper="$2"
+	local backend_fc="$3"
+
+	local probe_src
+	probe_src="$(mktemp "${ROOT_DIR}/.mpi_probe_XXXXXX.f90")"
+	cat > "${probe_src}" << 'EOF'
+      program mpi_probe
+      use mpi
+      integer :: ierr
+      call MPI_Init(ierr)
+      call MPI_Finalize(ierr)
+      end program mpi_probe
+EOF
+
+	local ok=0
+	if [[ -n "${backend_fc}" ]]; then
+		if OMPI_FC="${backend_fc}" MPICH_FC="${backend_fc}" I_MPI_F90="${backend_fc}" \
+			"${mpi_fc_wrapper}" -c "${probe_src}" -o /dev/null >/dev/null 2>&1; then
+			ok=1
+		fi
+	else
+		if "${mpi_fc_wrapper}" -c "${probe_src}" -o /dev/null >/dev/null 2>&1; then
+			ok=1
+		fi
+	fi
+
+	rm -f "${probe_src}" "${probe_src%.f90}.o" >/dev/null 2>&1 || true
+
+	if [[ ${ok} -eq 1 ]]; then
+		return 0
+	fi
+
+	echo "Incompatibilité MPI/backend pour ${compiler_label}: ${mpi_fc_wrapper} ne peut pas compiler un code 'use mpi'." >&2
+	echo "Cause probable: mpi.mod généré avec un autre compilateur Fortran." >&2
+	echo "Action: charger un OpenMPI compilé avec ${compiler_label}, ou utiliser COMPILERS=mpif90/mpifort." >&2
+	return 1
 }
 
 resolve_mpi_launcher() {
@@ -369,6 +436,11 @@ run_campaign() {
 		for compiler in "${compiler_array[@]}"; do
 			if ! resolve_compiler_target "${compiler}"; then
 				echo "Compilateur/target indisponible: ${compiler} (skip)"
+				continue
+			fi
+
+			if ! check_mpi_backend_compatibility "${RESOLVED_COMPILER_LABEL}" "${RESOLVED_MPI_FC_WRAPPER}" "${RESOLVED_BACKEND_FC}"; then
+				echo "Target incompatible avec l'environnement MPI courant: ${RESOLVED_COMPILER_LABEL} (skip)"
 				continue
 			fi
 
