@@ -253,37 +253,47 @@ check_mpi_backend_compatibility() {
 	local backend_fc="$3"
 
 	local probe_src
+	local probe_obj
+	local probe_log
 	probe_src="$(mktemp "${ROOT_DIR}/.mpi_probe_XXXXXX.f90")"
+	probe_obj="${probe_src%.f90}.o"
+	probe_log="${probe_src%.f90}.log"
 	cat > "${probe_src}" << 'EOF'
-      program mpi_probe
-      use mpi
-      integer :: ierr
-      call MPI_Init(ierr)
-      call MPI_Finalize(ierr)
-      end program mpi_probe
+program mpi_probe
+  use mpi
+  implicit none
+  integer :: ierr
+  call MPI_Init(ierr)
+  call MPI_Finalize(ierr)
+end program mpi_probe
 EOF
 
 	local ok=0
 	if [[ -n "${backend_fc}" ]]; then
 		if OMPI_FC="${backend_fc}" MPICH_FC="${backend_fc}" I_MPI_F90="${backend_fc}" \
-			"${mpi_fc_wrapper}" -c "${probe_src}" -o /dev/null >/dev/null 2>&1; then
+			"${mpi_fc_wrapper}" -c "${probe_src}" -o "${probe_obj}" >"${probe_log}" 2>&1; then
 			ok=1
 		fi
 	else
-		if "${mpi_fc_wrapper}" -c "${probe_src}" -o /dev/null >/dev/null 2>&1; then
+		if "${mpi_fc_wrapper}" -c "${probe_src}" -o "${probe_obj}" >"${probe_log}" 2>&1; then
 			ok=1
 		fi
 	fi
 
-	rm -f "${probe_src}" "${probe_src%.f90}.o" >/dev/null 2>&1 || true
-
 	if [[ ${ok} -eq 1 ]]; then
+		rm -f "${probe_src}" "${probe_obj}" "${probe_log}" >/dev/null 2>&1 || true
 		return 0
 	fi
 
 	echo "Incompatibilité MPI/backend pour ${compiler_label}: ${mpi_fc_wrapper} ne peut pas compiler un code 'use mpi'." >&2
-	echo "Cause probable: mpi.mod généré avec un autre compilateur Fortran." >&2
-	echo "Action: charger un OpenMPI compilé avec ${compiler_label}, ou utiliser COMPILERS=mpif90/mpifort." >&2
+	if [[ -s "${probe_log}" ]]; then
+		echo "Détail compilateur (probe):" >&2
+		head -n 6 "${probe_log}" >&2 || true
+	fi
+	echo "Cause probable: module MPI Fortran (mpi.mod) incompatible avec la chaîne du wrapper MPI courant." >&2
+	echo "Action: charger explicitement OPENMPI_HASH (ex: kfjcqqr ou 5xjwtin) puis relancer." >&2
+
+	rm -f "${probe_src}" "${probe_obj}" "${probe_log}" >/dev/null 2>&1 || true
 	return 1
 }
 
@@ -468,6 +478,7 @@ run_campaign() {
 	IFS=',' read -r -a compiler_array <<< "${COMPILERS}"
 	IFS=',' read -r -a profile_array <<< "${PROFILES}"
 	IFS=',' read -r -a mode_array <<< "${MAQAO_MODES}"
+	declare -A compat_cache=()
 
 	for flag_profile in "${flag_array[@]}"; do
 		for compiler in "${compiler_array[@]}"; do
@@ -476,7 +487,17 @@ run_campaign() {
 				continue
 			fi
 
-			if ! check_mpi_backend_compatibility "${RESOLVED_COMPILER_LABEL}" "${RESOLVED_MPI_FC_WRAPPER}" "${RESOLVED_BACKEND_FC}"; then
+			local compat_key
+			compat_key="${RESOLVED_COMPILER_LABEL}|${RESOLVED_MPI_FC_WRAPPER}|${RESOLVED_BACKEND_FC}|${OPENMPI_HASH}|${OPENMPI_SPEC}|${OPENMPI_TOOLCHAIN}"
+			if [[ -z "${compat_cache[${compat_key}]:-}" ]]; then
+				if check_mpi_backend_compatibility "${RESOLVED_COMPILER_LABEL}" "${RESOLVED_MPI_FC_WRAPPER}" "${RESOLVED_BACKEND_FC}"; then
+					compat_cache[${compat_key}]="OK"
+				else
+					compat_cache[${compat_key}]="FAIL"
+				fi
+			fi
+
+			if [[ "${compat_cache[${compat_key}]}" != "OK" ]]; then
 				echo "Target incompatible avec l'environnement MPI courant: ${RESOLVED_COMPILER_LABEL} (skip)"
 				continue
 			fi
