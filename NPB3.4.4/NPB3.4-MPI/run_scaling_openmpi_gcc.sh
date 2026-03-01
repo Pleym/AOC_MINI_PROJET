@@ -17,6 +17,7 @@ set -euo pipefail
 #   ACCOUNT=... WALLTIME=... MEM=... CONSTRAINT=... NTASKS=...
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SELF_PATH="${SCRIPT_DIR}/$(basename "${BASH_SOURCE[0]}")"
 cd "${SCRIPT_DIR}"
 
 # -------------------- Paramètres --------------------
@@ -126,6 +127,12 @@ compute_summary() {
 }
 
 run_scaling() {
+  # En batch Slurm, l'environnement (spack, modules) n'est pas toujours initialisé.
+  # Sur romeo, la fonction romeo_load_x64cpu_env prépare Spack + toolchain.
+  if command -v romeo_load_x64cpu_env >/dev/null 2>&1; then
+    romeo_load_x64cpu_env >/dev/null 2>&1 || true
+  fi
+
   need_cmd spack
   need_cmd make
 
@@ -190,7 +197,8 @@ submit_self() {
 
   # Si on n'est pas dans un job, on soumet un job qui fait tout d'un coup (compile + boucle)
   local job_name="ft_${CLASS}_scaling_gcc_${FLAG_PROFILE}"
-  sbatch \
+  local job_id
+  job_id=$(sbatch --parsable \
     --account="${ACCOUNT}" \
     --time="${WALLTIME}" \
     --mem="${MEM}" \
@@ -201,7 +209,11 @@ submit_self() {
     --output="${job_name}.%j.out" \
     --error="${job_name}.%j.err" \
     --export=ALL,RUN_SCALING=1 \
-    "$0" | awk '{print "Soumis jobid=" $1}'
+    "${SELF_PATH}")
+
+  echo "Soumis jobid=${job_id}"
+  echo "Logs: ${job_name}.${job_id}.out / ${job_name}.${job_id}.err"
+  echo "Suivi: squeue -j ${job_id}"
 }
 
 if [[ "${RUN_SCALING:-0}" == "1" || -n "${SLURM_JOB_ID:-}" ]]; then
