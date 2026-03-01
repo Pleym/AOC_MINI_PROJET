@@ -5,6 +5,7 @@
 #SBATCH --constraint=x64cpu
 #SBATCH --partition=short
 #SBATCH --nodes=16
+#SBATCH --ntasks-per-node=16
 #SBATCH --cpus-per-task=1
 #SBATCH --job-name="NPB_FT_C_scaling"
 #SBATCH --error=job.%J.err
