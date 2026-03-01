@@ -119,7 +119,8 @@ compute_summary() {
   local t1
   t1=$(awk -F',' '$1=="1" {print $4}' "${OUT_CSV}" | median_from_stdin)
 
-  while read -r p; do
+  local p
+  for p in ${PROCS_LIST}; do
     local tp
     tp=$(awk -F',' -v pp="${p}" '$1==pp {print $4}' "${OUT_CSV}" | median_from_stdin)
 
@@ -127,11 +128,11 @@ compute_summary() {
     local eff="NA"
     if [[ "${t1}" != "NA" && "${tp}" != "NA" ]]; then
       speedup=$(awk -v a="${t1}" -v b="${tp}" 'BEGIN{printf "%.4f", a/b}')
-      eff=$(awk -v s="${speedup}" -v p="${p}" 'BEGIN{printf "%.4f", s/p}')
+      eff=$(awk -v s="${speedup}" -v pp="${p}" 'BEGIN{printf "%.4f", s/pp}')
     fi
 
     echo "${p},${tp},${speedup},${eff}" >> "${SUMMARY_CSV}"
-  done <<< "$(echo "${PROCS_LIST}")"
+  done
 }
 
 run_scaling() {

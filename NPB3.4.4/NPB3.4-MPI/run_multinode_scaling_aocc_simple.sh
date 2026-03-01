@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH --account="r250142"
-#SBATCH --time=0-00:20:00
+#SBATCH --time=0-00:30:00
 #SBATCH --mem=2G
 #SBATCH --constraint=x64cpu
-#SBATCH --nodes=128
+#SBATCH --partition=short
+#SBATCH --nodes=32
 #SBATCH --cpus-per-task=1
 #SBATCH --job-name="NPB_FT_C_scaling"
 #SBATCH --error=job.%J.err
@@ -13,7 +14,7 @@ romeo_load_x64cpu_env
 spack load openmpi@4.1.7%aocc
 
 PPN=16
-NODES_LIST="1 2 4 8 16 32 64 128"
+NODES_LIST="1 2 4 8 16 32"
 
 EXE="$SLURM_SUBMIT_DIR/bin/ft.C.x"
 OUT_CSV="$SLURM_SUBMIT_DIR/ft_C_scaling_$SLURM_JOB_ID.csv"
