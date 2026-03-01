@@ -259,13 +259,13 @@ check_mpi_backend_compatibility() {
 	probe_obj="${probe_src%.f90}.o"
 	probe_log="${probe_src%.f90}.log"
 	cat > "${probe_src}" << 'EOF'
-program mpi_probe
+program npb_mpi_probe_main
   use mpi
   implicit none
   integer :: ierr
   call MPI_Init(ierr)
   call MPI_Finalize(ierr)
-end program mpi_probe
+end program npb_mpi_probe_main
 EOF
 
 	local ok=0
