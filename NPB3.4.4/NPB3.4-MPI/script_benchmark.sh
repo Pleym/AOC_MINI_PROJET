@@ -22,8 +22,11 @@ CLASS="C"
 # Profils de flags à comparer (un OneView par profil)
 FLAG_PROFILES="${FLAG_PROFILES:-best_o2_profiled,o3_native,ofast_native,lto_native}"
 
-# Essai d'au moins deux wrappers compilateur MPI
-COMPILERS="${COMPILERS:-mpif90,mpifort}"
+# Essai de plusieurs backends compilateur Fortran.
+# Entrées acceptées:
+# - wrappers MPI directs: mpif90, mpifort
+# - backends Fortran: gfortran, flang, flang-new, ifort, ifx
+COMPILERS="${COMPILERS:-gfortran,flang-new}"
 
 # Conseils prof: seq puis par + modes R1/S1/R1-WS
 PROFILES="${PROFILES:-seq,par}"
@@ -120,13 +123,14 @@ resolve_flags_profile() {
 }
 
 configure_make_def_for_compiler() {
-	local compiler="$1"
-	local flag_profile="$2"
+	local mpi_fc_wrapper="$1"
+	local backend_fc="$2"
+	local flag_profile="$3"
 
 	resolve_flags_profile "${flag_profile}"
 	cp config/make.def.template config/make.def
 
-	set_make_def_param MPIFC "${compiler}"
+	set_make_def_param MPIFC "${mpi_fc_wrapper}"
 	set_make_def_param FLINK '$(MPIFC)'
 	set_make_def_param MPICC "mpicc"
 	set_make_def_param CLINK '$(MPICC)'
@@ -134,6 +138,49 @@ configure_make_def_for_compiler() {
 	set_make_def_param CFLAGS "${PROFILE_CFLAGS}"
 	set_make_def_param FLINKFLAGS "${PROFILE_FLINKFLAGS}"
 	set_make_def_param CLINKFLAGS "${PROFILE_CLINKFLAGS}"
+
+	# Évite des exports conflictuels selon implémentation MPI
+	unset OMPI_FC MPICH_FC I_MPI_F90 || true
+	if [[ -n "${backend_fc}" ]]; then
+		export OMPI_FC="${backend_fc}"
+		export MPICH_FC="${backend_fc}"
+		export I_MPI_F90="${backend_fc}"
+	fi
+}
+
+resolve_compiler_target() {
+	local compiler_target="$1"
+	RESOLVED_COMPILER_LABEL="${compiler_target}"
+	RESOLVED_MPI_FC_WRAPPER=""
+	RESOLVED_BACKEND_FC=""
+
+	case "${compiler_target}" in
+		mpif90|mpifort)
+			if ! command -v "${compiler_target}" >/dev/null 2>&1; then
+				return 1
+			fi
+			RESOLVED_MPI_FC_WRAPPER="${compiler_target}"
+			RESOLVED_BACKEND_FC=""
+			return 0
+			;;
+		gfortran|flang|flang-new|ifort|ifx)
+			if ! command -v "${compiler_target}" >/dev/null 2>&1; then
+				return 1
+			fi
+			if command -v mpif90 >/dev/null 2>&1; then
+				RESOLVED_MPI_FC_WRAPPER="mpif90"
+			elif command -v mpifort >/dev/null 2>&1; then
+				RESOLVED_MPI_FC_WRAPPER="mpifort"
+			else
+				return 1
+			fi
+			RESOLVED_BACKEND_FC="${compiler_target}"
+			return 0
+			;;
+		*)
+			return 1
+			;;
+	esac
 }
 
 resolve_mpi_launcher() {
@@ -320,13 +367,13 @@ run_campaign() {
 
 	for flag_profile in "${flag_array[@]}"; do
 		for compiler in "${compiler_array[@]}"; do
-			if ! command -v "${compiler}" >/dev/null 2>&1; then
-				echo "Compilateur indisponible: ${compiler} (skip)"
+			if ! resolve_compiler_target "${compiler}"; then
+				echo "Compilateur/target indisponible: ${compiler} (skip)"
 				continue
 			fi
 
-			echo "=== Compilation ${BENCHMARK}.${CLASS} avec ${compiler} (${flag_profile}) ==="
-			if ! configure_make_def_for_compiler "${compiler}" "${flag_profile}"; then
+			echo "=== Compilation ${BENCHMARK}.${CLASS} avec target=${RESOLVED_COMPILER_LABEL} (wrapper=${RESOLVED_MPI_FC_WRAPPER}, flags=${flag_profile}) ==="
+			if ! configure_make_def_for_compiler "${RESOLVED_MPI_FC_WRAPPER}" "${RESOLVED_BACKEND_FC}" "${flag_profile}"; then
 				failed=$((failed + 1))
 				continue
 			fi
@@ -334,14 +381,14 @@ run_campaign() {
 			make clean
 			mkdir -p bin
 			if ! make "${BENCHMARK}" "CLASS=${CLASS}" F08=def; then
-				echo "Echec compilation avec ${compiler} (${flag_profile})" >&2
+				echo "Echec compilation avec ${RESOLVED_COMPILER_LABEL} (${flag_profile})" >&2
 				failed=$((failed + 1))
 				continue
 			fi
 
 			local exe="./bin/${BENCHMARK}.${CLASS}.x"
 			if [[ ! -x "${exe}" ]]; then
-				echo "Binaire introuvable après compilation ${compiler}/${flag_profile}: ${exe}" >&2
+				echo "Binaire introuvable après compilation ${RESOLVED_COMPILER_LABEL}/${flag_profile}: ${exe}" >&2
 				failed=$((failed + 1))
 				continue
 			fi
@@ -352,12 +399,12 @@ run_campaign() {
 					nprocs="${SEQ_NTASKS}"
 				fi
 
-				if ! run_plain_timing "${flag_profile}" "${compiler}" "${profile}" "${nprocs}" "${exe}"; then
+				if ! run_plain_timing "${flag_profile}" "${RESOLVED_COMPILER_LABEL}" "${profile}" "${nprocs}" "${exe}"; then
 					failed=$((failed + 1))
 				fi
 
 				for mode in "${mode_array[@]}"; do
-					if ! run_oneview "${flag_profile}" "${compiler}" "${profile}" "${mode}" "${nprocs}" "${exe}"; then
+					if ! run_oneview "${flag_profile}" "${RESOLVED_COMPILER_LABEL}" "${profile}" "${mode}" "${nprocs}" "${exe}"; then
 						failed=$((failed + 1))
 					fi
 				done
