@@ -18,7 +18,15 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SELF_PATH="${SCRIPT_DIR}/$(basename "${BASH_SOURCE[0]}")"
-cd "${SCRIPT_DIR}"
+
+# En batch Slurm, le script est copié/relancé depuis un répertoire spool.
+# Les fichiers NPB (config/, Makefile, etc.) sont eux dans le répertoire de soumission.
+ROOT_DIR="${SCRIPT_DIR}"
+if [[ -n "${SLURM_SUBMIT_DIR:-}" && -f "${SLURM_SUBMIT_DIR}/config/make.def.template" ]]; then
+  ROOT_DIR="${SLURM_SUBMIT_DIR}"
+fi
+
+cd "${ROOT_DIR}"
 
 # -------------------- Paramètres --------------------
 BENCHMARK="ft"
@@ -137,7 +145,7 @@ run_scaling() {
   need_cmd make
 
   if [[ ! -f config/make.def.template ]]; then
-    echo "Erreur: lance ce script depuis NPB3.4.4/NPB3.4-MPI" >&2
+    echo "Erreur: lance ce script depuis NPB3.4.4/NPB3.4-MPI (ROOT_DIR='${ROOT_DIR}')" >&2
     exit 1
   fi
 
@@ -199,6 +207,7 @@ submit_self() {
   local job_name="ft_${CLASS}_scaling_gcc_${FLAG_PROFILE}"
   local job_id
   job_id=$(sbatch --parsable \
+    --chdir="${SCRIPT_DIR}" \
     --account="${ACCOUNT}" \
     --time="${WALLTIME}" \
     --mem="${MEM}" \
