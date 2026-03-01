@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH --account="r250142"
-#SBATCH --time=0-00:30:00
+#SBATCH --time=0-01:00:00
 #SBATCH --mem=2G
 #SBATCH --constraint=x64cpu
 #SBATCH --partition=short
@@ -13,6 +13,12 @@
 
 romeo_load_x64cpu_env
 spack load openmpi@4.1.7%aocc
+
+cd "$SLURM_SUBMIT_DIR"
+
+# Compilation
+cp config/make.def.template config/make.def
+make ft CLASS=C F08=def MPIFC=mpif90 MPICC=mpicc FFLAGS="-O2" CFLAGS="-O2"
 
 PPN=16
 NODES_LIST="1 2 4 8 16"
