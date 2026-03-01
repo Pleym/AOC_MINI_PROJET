@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --account="projet0041"
+#SBATCH --account="r250142"
 #SBATCH --time=0-00:20:00
 #SBATCH --mem=2G
 #SBATCH --constraint=x64cpu
