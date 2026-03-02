@@ -826,7 +826,20 @@
       integer dir
       double complex x1(ntdivnp), x2(ntdivnp)
 
-      double complex scratch(fftblockpad_default*maxdim*2)
+      double complex, allocatable, save :: scratch(:)
+      integer, save :: scratch_n = 0
+      integer need_n
+
+      need_n = fftblockpad * maxdim * 2
+      if (need_n .le. 0) then
+         need_n = fftblockpad_default * maxdim * 2
+      endif
+
+      if (scratch_n .ne. need_n) then
+         if (allocated(scratch)) deallocate(scratch)
+         allocate(scratch(need_n))
+         scratch_n = need_n
+      endif
 
 !---------------------------------------------------------------------
 ! note: args x1, x2 must be different arrays
