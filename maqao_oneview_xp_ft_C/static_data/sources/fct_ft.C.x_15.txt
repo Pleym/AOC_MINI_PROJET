@@ -1,0 +1,39 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 942 - 1216
+--------------------------------------------------------------------------------
+
+942:       subroutine cffts2(is, d1, d2, d3, x, xout, y)
+[...]
+956:       logd2 = ilog2(d2)
+957: 
+958:       do k = 1, d3
+959:         do ii = 0, d1 - fftblock, fftblock
+960:            if (timers_enabled) call timer_start(T_fftcopy)
+961:            do j = 1, d2
+962:               do i = 1, fftblock
+963:                  y(i,j,1) = x(i+ii,j,k)
+964:               enddo
+965:            enddo
+966:            if (timers_enabled) call timer_stop(T_fftcopy)
+967: 
+968:            if (timers_enabled) call timer_start(T_fftlow)
+969:            call cfftz (is, logd2, d2, y, y(1, 1, 2))
+970:            if (timers_enabled) call timer_stop(T_fftlow)
+971: 
+972:            if (timers_enabled) call timer_start(T_fftcopy)
+973:            do j = 1, d2
+974:               do i = 1, fftblock
+975:                  xout(i+ii,j,k) = y(i,j,1)
+976:               enddo
+977:            enddo
+978:            if (timers_enabled) call timer_stop(T_fftcopy)
+979:         enddo
+980:       enddo
+981: 
+982:       return
+983:       end
+[...]
+1208:       if (n .eq. 1) then
+[...]
+1214:       do while (nn .lt. n)
+1215:          nn = nn*2
+1216:          lg = lg+1

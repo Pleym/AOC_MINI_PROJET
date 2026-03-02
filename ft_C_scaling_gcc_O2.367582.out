@@ -1,0 +1,48 @@
+[INFO] Compilation FT CLASS=C avec FLAG_PROFILE=O2 (OpenMPI: openmpi@4.1.7%gcc)
+rm -f core *~ */core */*~
+rm -f */*.o */*.mod */*.obj */*.exe */npbparams.h */mpinpb.*
+rm -f MPI_dummy/test MPI_dummy/libmpi.a MPI_dummy/mpi_dummy.f90
+rm -f sys/setparams sys/makesuite sys/setparams.h
+rm -f btio.*.out*
+   =========================================
+   =      NAS Parallel Benchmarks 3.4      =
+   =      MPI/Fortran/C                    =
+   =========================================
+
+cd FT; make CLASS=C F08=def
+make[1]: Entering directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT'
+make[2]: Entering directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/sys'
+gcc -g -DFORTRAN_REC_SIZE=0 -o setparams setparams.c
+make[2]: Leaving directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/sys'
+../sys/setparams ft C 
+cp mpinpb_def.f90 mpinpb.f90
+mpif90 -c  -O2 mpinpb.f90
+mpif90 -c  -O2 ft_data.f90
+mpif90 -c  -O2 ft.f90
+cd ../common; cp mpinpb_def.h mpinpb.h
+cd ../common; mpif90 -c  -O2 get_active_nprocs.f90
+cd ../common; mpif90 -c  -O2 randi8.f90
+cd ../common; mpif90 -c  -O2 print_results.f90
+cd ../common; mpif90 -c  -O2 timers.f90
+mpif90 -O2 -o ../bin/ft.C.x ft.o ft_data.o mpinpb.o ../common/get_active_nprocs.o ../common/randi8.o ../common/print_results.o ../common/timers.o 
+make[1]: Leaving directory '/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT'
+[INFO] p=1 r=1 time=82.04s
+[INFO] p=1 r=2 time=87.81s
+[INFO] p=1 r=3 time=85.73s
+[INFO] p=2 r=1 time=57.64s
+[INFO] p=2 r=2 time=57.82s
+[INFO] p=2 r=3 time=61.19s
+[INFO] p=4 r=1 time=38.90s
+[INFO] p=4 r=2 time=41.67s
+[INFO] p=4 r=3 time=38.88s
+[INFO] p=8 r=1 time=18.69s
+[INFO] p=8 r=2 time=17.71s
+[INFO] p=8 r=3 time=22.67s
+[INFO] p=16 r=1 time=12.32s
+[INFO] p=16 r=2 time=12.08s
+[INFO] p=16 r=3 time=13.06s
+[INFO] p=32 r=1 time=8.58s
+[INFO] p=32 r=2 time=8.60s
+[INFO] p=32 r=3 time=8.54s
+[OK] CSV brut: ft_C_scaling_openmpi_gcc_O2.csv
+[OK] Synthèse: ft_C_scaling_openmpi_gcc_O2_summary.csv

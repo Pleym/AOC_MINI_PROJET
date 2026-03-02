@@ -166,6 +166,15 @@ resolve_flags_profile() {
 			PROFILE_FLINKFLAGS='$(FFLAGS)'
 			PROFILE_CLINKFLAGS='$(CFLAGS)'
 			;;
+		o3_avx2_fma)
+			# Profil volontairement explicite: sur certaines toolchains, -march=native ne déclenche
+			# pas toujours une vectorisation VEX/AVX sur le code en COMPLEX.
+			# Hypothèse ROMEO x64cpu: AVX2+FMA disponibles (EPYC).
+			PROFILE_FFLAGS="-O3 -mavx2 -mfma -msse3 -funroll-loops -g -fno-omit-frame-pointer"
+			PROFILE_CFLAGS="-O3 -mavx2 -mfma -msse3 -funroll-loops -g -fno-omit-frame-pointer"
+			PROFILE_FLINKFLAGS='$(FFLAGS)'
+			PROFILE_CLINKFLAGS='$(CFLAGS)'
+			;;
 		ofast_native)
 			PROFILE_FFLAGS="-Ofast -ffast-math -march=native -funroll-loops -g -fno-omit-frame-pointer"
 			PROFILE_CFLAGS="-Ofast -ffast-math -march=native -funroll-loops -g -fno-omit-frame-pointer"

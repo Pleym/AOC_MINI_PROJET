@@ -1,0 +1,5 @@
+module;src_file;score;issue;opts;
+ft.C.x;randi8.f90;0.66666666666667;"-g is missing for some functions (possibly ones added by the compiler), but other debug feature are available. Some analysis may be inaccurate.";" F90 Flang - 1.5 2017-05-01 '+flang -c -O3 -I/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/include -I/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib'";
+ft.C.x;randi8.f90;;"-march=(target) is missing. ";"";
+ft.C.x;ft.f90;0.66666666666667;"-g is missing for some functions (possibly ones added by the compiler), but other debug feature are available. Some analysis may be inaccurate.";" F90 Flang - 1.5 2017-05-01 '+flang -c -O3 -I/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/include -I/apps/2025/spack_install/linux-rhel9-zen4/linux-rhel9-zen4/aocc-5.0.0/openmpi-4.1.7-5xjwtinzt2wrrifl52gxby222rtswzte/lib'";
+ft.C.x;ft.f90;;"-march=(target) is missing. ";"";

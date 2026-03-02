@@ -341,6 +341,8 @@
 
       character class
       integer ierr, i, fstatus
+      integer env_fftblock, env_status, env_iostat, fftblock_pow2
+      character(len=64) env_fftblock_str
       debug = .FALSE.
       
       call MPI_Init(ierr)
@@ -632,6 +634,22 @@
 
       fftblock = fftblock_default
       fftblockpad = fftblockpad_default
+
+      env_fftblock = 0
+      env_fftblock_str = ''
+      call get_environment_variable('NPB_FFTBLOCK', env_fftblock_str, status=env_status)
+      if (env_status .eq. 0) then
+         read(env_fftblock_str, *, iostat=env_iostat) env_fftblock
+         if (env_iostat .ne. 0) env_fftblock = 0
+      endif
+
+      if (env_fftblock .gt. 0) then
+         fftblock_pow2 = 1
+         do while (fftblock_pow2 * 2 .le. env_fftblock)
+            fftblock_pow2 = fftblock_pow2 * 2
+         enddo
+         fftblock = fftblock_pow2
+      endif
 
       if (layout_type .eq. layout_2d) then
          if (dims(2, 1) .lt. fftblock) fftblock = dims(2, 1)

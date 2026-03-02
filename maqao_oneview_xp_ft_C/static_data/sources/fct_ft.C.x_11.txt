@@ -1,0 +1,51 @@
+/gpfs/home/doabaul/AOC/AOC_MINI_PROJET/NPB3.4.4/NPB3.4-MPI/FT/ft.f90: 651 - 728
+--------------------------------------------------------------------------------
+
+651:       subroutine compute_indexmap(twiddle, d1, d2, d3)
+[...]
+683:       if (layout_type .eq. layout_0d) then ! xyz layout
+684:          do i = 1, dims(1,3)
+685:             ii =  mod(i+xstart(3)-2+nx/2, nx) - nx/2
+686:             ii2 = ii*ii
+687:             do j = 1, dims(2,3)
+688:                jj = mod(j+ystart(3)-2+ny/2, ny) - ny/2
+689:                ij2 = jj*jj+ii2
+690:                do k = 1, dims(3,3)
+691:                   kk = mod(k+zstart(3)-2+nz/2, nz) - nz/2
+692:                   twiddle(i,j,k) = dexp(ap*dfloat(kk*kk+ij2))
+693:                end do
+694:             end do
+695:          end do
+696:       else if (layout_type .eq. layout_1d) then ! zxy layout 
+697:          do i = 1,dims(2,3)
+698:             ii =  mod(i+xstart(3)-2+nx/2, nx) - nx/2
+699:             ii2 = ii*ii
+700:             do j = 1,dims(3,3)
+701:                jj = mod(j+ystart(3)-2+ny/2, ny) - ny/2
+702:                ij2 = jj*jj+ii2
+703:                do k = 1,dims(1,3)
+704:                   kk = mod(k+zstart(3)-2+nz/2, nz) - nz/2
+705:                   twiddle(k,i,j) = dexp(ap*dfloat(kk*kk+ij2))
+706:                end do
+707:             end do
+708:          end do
+709:       else if (layout_type .eq. layout_2d) then ! zxy layout
+710:          do i = 1,dims(2,3)
+711:             ii =  mod(i+xstart(3)-2+nx/2, nx) - nx/2
+712:             ii2 = ii*ii
+713:             do j = 1, dims(3,3)
+714:                jj = mod(j+ystart(3)-2+ny/2, ny) - ny/2
+715:                ij2 = jj*jj+ii2
+716:                do k =1,dims(1,3)
+717:                   kk = mod(k+zstart(3)-2+nz/2, nz) - nz/2
+718:                   twiddle(k,i,j) = dexp(ap*dfloat(kk*kk+ij2))
+719:                end do
+720:             end do
+721:          end do
+722:       else
+723:          print *, ' Unknown layout type ', layout_type
+724:          stop
+725:       endif
+726: 
+727:       return
+728:       end
