@@ -464,7 +464,13 @@ run_oneview() {
 		return 1
 	fi
 
-	local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${label}_${compiler}_${profile}_${mode}"
+		local fftblock_suffix=""
+		if [[ -n "${NPB_FFTBLOCK:-}" ]]; then
+			# NPB_FFTBLOCK influence le runtime mais pas les flags: on l'inclut dans le nom
+			# pour éviter d'écraser deux OneView identiques à part le blocking.
+			fftblock_suffix="_fftb${NPB_FFTBLOCK}"
+		fi
+		local xp="maqao_oneview_xp_${BENCHMARK}_${CLASS}_${label}${fftblock_suffix}_${compiler}_${profile}_${mode}"
 	rm -rf "${xp}"
 
 	if maqao oneview ${mode_args} xp="${xp}" --mpi-command="${launcher}" -- "${exe}"; then
